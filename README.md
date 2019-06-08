@@ -4,15 +4,11 @@
 [![Coveralls](https://coveralls.io/repos/github/hustf/MechanicalUnits.jl/badge.svg?branch=master)](https://coveralls.io/github/hustf/MechanicalUnits.jl?branch=master)
 
 
-  - [Installation](#installation)
-  - [Output example](#output-example)
   - [Usage](#usage)
-    - [Params](#params)
-    - [GitHub token](#github-token)
-  - [Features and advantages of this project](#features-and-advantages-of-this-project)
-    - [Alternatives](#alternatives)
-    - [Projects using this library](#projects-using-this-library)
-  - [Am I missing some essential feature?](#am-i-missing-some-essential-feature)
+  - [Goals](#goals)
+  - [Alternatives](#alternatives)
+    - [Projects using this library](#projects using this library)
+  - [FAQ](#faq)
   - [Contributing](#contributing)
   - [License](#license)
 

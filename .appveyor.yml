@@ -3,6 +3,8 @@ environment:
   matrix:
   - julia_version: 1.0
   - julia_version: nightly
+  repo_token:
+    secure: locJtjEVIkbzBA/+67vXJHOupVRB1TqocLm8QFGSjCRPIpOVaJcvTLnxTnUY+Lvu
 platform:
   - x86
   - x64
