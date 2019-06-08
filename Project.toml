@@ -3,6 +3,9 @@ uuid = "e6be9192-89dc-11e9-36e6-5dbcb28f419e"
 authors = ["hustf <hustf@users.noreply.github.com>"]
 version = "0.1.0"
 
+[deps]
+Unitful = "1986cc42-f94f-5a68-af5c-568840ba703d"
+
 [compat]
 julia = "1"
 

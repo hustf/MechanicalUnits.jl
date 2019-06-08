@@ -2,5 +2,7 @@ using MechanicalUnits
 using Test
 
 @testset "MechanicalUnits.jl" begin
-    # Write your own tests here.
+    @testset "Pretty-print"  begin
+        include("pretty-print.jl")
+    end
 end
