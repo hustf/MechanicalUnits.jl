@@ -14,38 +14,63 @@
 
 
 ### Using units helps you
-We're using Julia to solve difficult problems, but what about the easy ones?
+A calculator just eats up the difficulties in pre-algebra. You'll get the divisions and fractions right every time. When using pure SI units, engineering problems can still be solved that way. But you soon loose track of what every number 'means'. 
 
-Including units gives
+Using units gives
 
 * Fewer mistakes
 * More pattern recognition
+* Hints to find wrong input
 * Quicker problem solving
-* An alternative approach to understanding calculations
+* More ways to understand a physical problem or read a calculation
 
 
 ## Usage
 ```julia
 using MechanicalUnits
+# which car to use?
+70l / 42MJ/kg / 0.745kg/l / 0.8l/10km
+
+75kWh/12.2kWh/100km
+
+# Which wire rope diameter to pick?
 E=206GPa
-A = 1mm*1mm
+A = 1mm*1mm*0.741
 E*A/10100mmm
 20.40N/mm
 ans*100kg*g
 2000mm
 ```
+Base.delete_method(@which foo(0.2))
+Or even better, put 'using MechanicalUnits' in the .julia/config/startup.jl
+
+The exported units can be listed:
+```varinfo(MechanicalUnits)```
+
+You may get warning messages when also loading other packages. If that happens, switch to importing
+just what you need
+```import MechanicalUnits: N, kg, m, s, MPa```
+
 
 ## Goals
-This aims to make Julia the preferred calculator for quick side calculations. 
-We accept being less general where it's massively useful. 
+This adaption of [Unitful.jl](https://github.com/PainterQubits/Unitful.jl) aims to make Julia a preferable tool for quick side calculations. We accept being less general when that is useful for the mechanical or structural engineer, working in a Windows environment.
 
- Which means:
-* Quantities use four significant digits with engineering formatting and unit prefixing common 
-to structural and mechanical engineering.
-* REPL output can be copied to make input: We print '2.32m/s' instead of '2.32 m s^-1"
-* Vector output moves the units outside where possible: [1, 2]m
-* We use Unicode symbols which can be shown in the Windows REPL and a nice font. 𝐓, 𝐋 and 𝐌 are replaced.
-* We want to support unitful complex numbers as it helps in equation solving. It may mean switching dependencies.
+This means:
+* `h` is an hour, not Planck's constant
+* `in` is still a function, `inch` is a unit
+* REPL output can be copied to input: `2.32 m s^-1` is printed as `2.32m/s`
+* Prefer length prefixes `μ` and `mm`
+* Prefer force and moment prefix `k`
+* Prefer stress prefix `M`
+* Prefer `Pa`over `N/m²`
+* Define the bullet operator `∙` (U+2219, \vysmblkcircle + tab in Julia). This is simply to avoid less recognizable units like `N*m` while also being able to use printed results as input.
+* Thousands separator is supported, but limited to an acceptable format for Julia input: ```983_322Nm```
+* Four significant digits output, but don't round when it would display zeros: 983_322N
+* Array output moves the units outside where possible: [0.0009, 239_912]mm, not [0.900mm, 239.9 m]
+* Substitute symbols which can't be displayed in Windows terminals: 𝐓 -> Time, 𝐋 -> Length, 𝐌 -> Mass
+* We would like to support unitful complex numbers, as they often appear while solving equations. 
+* Energy and moment units are both important in the contexts, but using `J` conveys meaning. We would like to provide a special REPL mode for picking an output preference while typing, for examply by typing `ctrl + .` and then correcting a suggested output. 
+* The `ctrl + .` REPL mode would resemble typing on the right-hand side of an equation. It gives no meaning after function definitions. Any defined parameter could be treated as a unit. 
 
 
 ## Alternatives
