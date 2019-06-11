@@ -1,8 +1,14 @@
+# The below is preliminary code. 
+# TODO; Test, fix and improvefor a few units
+# Then, write macros to bring in a set of prefixes and derived units.
 module MechanicalUnits
 export ∙
-export @u_str
+# Convenience / info / testing
+export @u_str, uconvert, upreferred, basefactor, ustrip, unit
+# To shorten type signature ouput
 export Time, Length, Mass, Temperature
 export FreeUnits, AffineUnits, Unitlike, Unit, Quantity, Dimensions
+# To shorten unit output, and enabling the same format in input
 export m, m², m³, m⁴, s, s², s³, s⁴, kg, kg², kg³, kg⁴
 export °C, °F
 export Ra, Ra², Ra³, Ra⁴, K, K², K³, K⁴
@@ -13,10 +19,11 @@ export h⁴, μm⁴, minute⁴
 import Base:show
 using InteractiveUtils
 #using Formatting (or implement elsewhere....)
-
 using Unitful
 import Unitful: FreeUnits, AffineUnits, Unitlike, Unit, Quantity, Dimension, Dimensions
 import Unitful: isunitless, unit, sortexp, showrep, abbr, prefix, power, superscript
+# Convenience
+import Unitful: uconvert, upreferred, basefactor, ustrip
 # temporary imports
 #import Unitful: tens, dimension
 
@@ -41,7 +48,10 @@ K = Unitful.K
 # Directly derived units
 μm = Unitful.μm
 minute = Unitful.minute
-h = Unitful.hr # Nah, redefine
+
+#h = Unitful.hr # Nah, redefine!
+@unit h      "h"       hour      (3600//1)s false
+
 
 
 # For all the exported units, we also need to understand superscripts 2 to 4, 
@@ -76,12 +86,20 @@ const global h² = h^2
 const global h³ = h^3
 const global h⁴ = h^4
 
+# Automatic conversion
 
+
+
+
+
+
+
+
+
+
+
+# This is probably used by Unitful when registering 'h'
 const localunits = Unitful.basefactors
-#const localpromotion = Unitful.promotion # only if you've used @dimension
-
-
-
 
 """
 MechanicalUnits defines the bullet operator `∙` (Unicode U+2219, \vysmblkcircle + tab in Julia). 
@@ -91,13 +109,6 @@ having to print units with the `*` symbol.
 """ 
 ∙(a, b) = *(a,b)
 
-function __init__()
-    # This is for evaluating Unitful macros in the context of this package.
-        merge!(Unitful.basefactors, localunits)
-#        merge!(Unitful.promotion, localpromotion) # only if you've used @dimension
-    # This enables any units defined here to be used in the @u_str
-    Unitful.register(MechanicalUnits)
-end
 
 #=
 We want to print quantities without a space between value and unit.
@@ -109,6 +120,9 @@ Base.delete_method( which( show, (IO, MIME"text/plain", Quantity)))
 
 function show(io::IO, x::Quantity)
     show(io, x.val)
+    # TODO fix this unfortunate case: 
+    # 1000μm * 1m |> m² --> 1//1000m²
+    # So, if val is a rational, add paranthesis.
     if !isunitless(unit(x))
         show(io, unit(x))
     end
@@ -189,23 +203,16 @@ abbr(::Dimension{:Time}) = "Time"
 abbr(::Dimension{:Temperature}) = "Temperature"
 
 
-
-# Todo: use :typeinfo to convey if units should be printed, or already has. 
-
-
-
-
-
-
-
-
-
-
-
-
-## For moving units outside of array types during print, 
-## define a type for abstract arrays with the same or compatible units.
 #=
+
+Todo: use :typeinfo to convey if units should be printed, or already has. 
+baremodule subset...
+end
+
+The 'position vector' probably is redundant here? Dispatch on Vector{Length} instead of Pos?
+
+Anyway, position vector, force vector, moment vector could be useful. But would need 
+more readable names than just Pos. And to be fast, fixed size vectors are better.
 
 "Position vector"
 const Pos = Vector{Quantity{T,𝐋,U}} where {T,U}
@@ -228,38 +235,12 @@ end
 
 =#
 
-
-
-
-
-
-
-
-
-
-
-#=
-# Todo: Consider modifying Unitful.superscript.
-#      But that doesn't aid input.
-
-# TODO: Move to using this approach:
-@unit transportdistance "Nm" TransportDistance 1u"kg*m" false
-@unit transportdistance "Nm" TransportDistance 1u"kg*m" false
-
-@dimension(symb, abbr, name)
-@refunit
-@derived_dimension Area 𝐋^2` gives `Area` and `AreaUnit` type aliases
-@derived_dimension Speed 𝐋/𝐓` gives `Speed` and `SpeedUnit` type aliases
-Unitful.register(Main)
-
-
-
-
-=#
-
-
-
-
+function __init__()
+    # This is for evaluating Unitful macros in the context of this package.
+    merge!(Unitful.basefactors, localunits)
+    # This enables any units defined here to be used in the @u_str
+    Unitful.register(MechanicalUnits)
+end
 
 
 end # module

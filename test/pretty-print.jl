@@ -1,7 +1,7 @@
 using MechanicalUnits
 using Test
-# temp
-#import MechanicalUnits: abbr, unit, sortexp, tens, showrep, dimension
+# temp1
+import MechanicalUnits: abbr, unit, sortexp, tens, showrep, dimension
 #import MechanicalUnits: Dimension, Dimensions
 shortp(x) = repr(x, context = :color=>true)
 longp(x) = repr(:"text/plain", x, context = :color=>true)
@@ -67,15 +67,14 @@ end
 end
 
 @testset "Type signatures, dimensions 1 to 4" begin
- dimdi = Dict([m => "Length", s => "Time", kg => "Mass", 
+    dimdi = Dict([m => "Length", s => "Time", kg => "Mass", 
             Ra => "Temperature", K => "Temperature", h => "Time", 
             μm => "Length", minute => "Time"])
- expdidi = Dict(["²" => "^2", "³" => "^3", "⁴" => "^4"])
- for bu in ["m", "s", "kg", "Ra", "K", "h", "μm", "minute"], di in ["²", "³", "⁴"]
-    usy = Symbol(bu*di)
-    println(typeof(eval(usy)))
- end
-
+    expdidi = Dict(["²" => "^2", "³" => "^3", "⁴" => "^4"])
+    for bu in ["m", "s", "kg", "Ra", "K", "h", "μm", "minute"], di in ["²", "³", "⁴"]
+        usy = Symbol(bu*di)
+        println(typeof(eval(usy)))
+    end
 end
 
 
