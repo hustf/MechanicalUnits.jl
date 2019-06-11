@@ -5,10 +5,7 @@ using Test
 #import MechanicalUnits: Dimension, Dimensions
 shortp(x) = repr(x, context = :color=>true)
 longp(x) = repr(:"text/plain", x, context = :color=>true)
-#    iob=IOBuffer()
-#    show(IOContext(iob, :color=>true), :"text/plain", p)
-#    take!(iob)|>String
-#end
+
 @testset "Most basic" begin
     testunits = [m ,  s ,  kg ]
     for u in testunits
@@ -66,30 +63,29 @@ end
 
 
 @testset "Modified Dimension type signatures" begin
-    @test shortp(typeof(1kg∙K∙m/s)) == "Unitful.Quantity{Int64,Length*Mass*Temperature*Time^-1,Unitful.FreeUnits{(\e[36mkg\e[39m, \e[36mK\e[39m, \e[36mm\e[39m, \e[36ms^-1\e[39m),Length*Mass*Temperature*Time^-1,nothing}}"
+    @test shortp(typeof(1kg∙K∙m/s)) == "Quantity{Int64,Length*Mass*Temperature*Time^-1,FreeUnits{(\e[36mkg\e[39m, \e[36mK\e[39m, \e[36mm\e[39m, \e[36ms^-1\e[39m),Length*Mass*Temperature*Time^-1,nothing}}"
 end
+
+@testset "Type signatures, dimensions 1 to 4" begin
+ dimdi = Dict([m => "Length", s => "Time", kg => "Mass", 
+            Ra => "Temperature", K => "Temperature", h => "Time", 
+            μm => "Length", minute => "Time"])
+ expdidi = Dict(["²" => "^2", "³" => "^3", "⁴" => "^4"])
+ for bu in ["m", "s", "kg", "Ra", "K", "h", "μm", "minute"], di in ["²", "³", "⁴"]
+    usy = Symbol(bu*di)
+    println(typeof(eval(usy)))
+ end
+
+end
+
+
 
 
 # TODO: Test superscripts, dimensions.
 
 
 #= 
-
 Currently dead code
-vp = [p, p]
-@test shortp(vp) == "[[1.0, 2.0], [1.0, 2.0]]\e[36mm\e[39m"
-@test longp(vp) == "2-element Npos{Pos{Float64}}:\n[[1.0, 2.0], [1.0, 2.0]]\e[36mm\e[39m"
-p1 = [1,1]m
-p2 = [2,2]m
-p3 = [3,3]m
-p4 = [4,4]m
-mp = hcat([p1, p2], [p3, p4])
-@test mp[2,1] == p2
-@test shortp(mp) == "[[1.0, 1.0] [3.0, 3.0]; [2.0, 2.0] [4.0, 4.0]]\e[36mm\e[39m"
-@test longp(mp) == "2x2 Npos{Pos{Float64}}:\n[[1.0, 1.0] [3.0, 3.0]; [2.0, 2.0] [4.0, 4.0]]\e[36mm\e[39m"
-
-
-
 
 [Ra, K, h, μm, minute]
 for q1 in testunits, q2 in testunits
@@ -100,6 +96,18 @@ for q1 in testunits, q2 in testunits
     println("@test shortp(2q1 * 3q2) == res")
   #println(2*q1*3*q2)
 end
-
+testunits = 
+m², m³, m⁴, s², s³, s⁴, g², kg³, kg⁴
+°C, °F
+Ra, Ra², Ra³, Ra⁴, K, K², K³, K⁴
+h, μm, minute
+h², μm², minute²
+h³, μm³, minute³
+h⁴, μm⁴, minute⁴
+di in ["²", "³", "⁴"], 
+for bu in ["m", "s", "kg", "Ra", "K", "h", "μm", "minute"]
+   # usy = Symbol(di*bu)
+    print(bu, " => \"Mass\", ")
+end
 show(stderr, :"text/plain", longp(1kg∙K∙m/s))
 =#

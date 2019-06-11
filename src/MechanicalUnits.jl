@@ -1,9 +1,15 @@
 module MechanicalUnits
-export ∙, Time, Length, Mass
+export ∙
+export @u_str
+export Time, Length, Mass, Temperature
+export FreeUnits, AffineUnits, Unitlike, Unit, Quantity, Dimensions
 export m, m², m³, m⁴, s, s², s³, s⁴, kg, kg², kg³, kg⁴
 export °C, °F
 export Ra, Ra², Ra³, Ra⁴, K, K², K³, K⁴
 export h, μm, minute
+export h², μm², minute²
+export h³, μm³, minute³
+export h⁴, μm⁴, minute⁴
 import Base:show
 using InteractiveUtils
 #using Formatting (or implement elsewhere....)
@@ -33,9 +39,10 @@ kg = Unitful.kg
 Ra = Unitful.Ra 
 K = Unitful.K 
 # Directly derived units
-h = Unitful.hr
 μm = Unitful.μm
 minute = Unitful.minute
+h = Unitful.hr # Nah, redefine
+
 
 # For all the exported units, we also need to understand superscripts 2 to 4, 
 # as they appear in printed units and may be copied as inputs.
@@ -65,6 +72,16 @@ const global μm⁴ = μm^4
 const global minute² = minute^2
 const global minute³ = minute^3
 const global minute⁴ = minute^4
+const global h² = h^2
+const global h³ = h^3
+const global h⁴ = h^4
+
+
+const localunits = Unitful.basefactors
+#const localpromotion = Unitful.promotion # only if you've used @dimension
+
+
+
 
 """
 MechanicalUnits defines the bullet operator `∙` (Unicode U+2219, \vysmblkcircle + tab in Julia). 
@@ -76,6 +93,9 @@ having to print units with the `*` symbol.
 
 function __init__()
     # This is for evaluating Unitful macros in the context of this package.
+        merge!(Unitful.basefactors, localunits)
+#        merge!(Unitful.promotion, localpromotion) # only if you've used @dimension
+    # This enables any units defined here to be used in the @u_str
     Unitful.register(MechanicalUnits)
 end
 

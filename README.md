@@ -53,24 +53,26 @@ just what you need
 
 
 ## Goals
-This adaption of [Unitful.jl](https://github.com/PainterQubits/Unitful.jl) aims to make Julia a preferable tool for quick side calculations. We accept being less general when that is useful for the mechanical or structural engineer, working in a Windows environment.
+This adaption of [Unitful.jl](https://github.com/PainterQubits/Unitful.jl) aims to make Julia a preferable tool for quick side calculations in an office computer with very limited user permissions.
 
 This means:
+* We adapt to the limitation of specific consoles: Windows Powershell, Julia REPL or VSCode.
+* We make a specialized set of units commonly encountered by the mechanical or structural engineer.
+* Four significant digits output for floating numbers, no trailing zeros. Don't round when that would display zeros to the left of decimal point: `(991mm)^2` -> `983_322mm²`
 * `h` is an hour, not Planck's constant
-* `in` is still a function, `inch` is a unit
+* `in` is reserved by Julia, `inch` is a unit
 * REPL output can be copied to input: `2.32 m s^-1` is printed as `2.32m/s`
+* Define the bullet operator `∙` (U+2219, \vysmblkcircle + tab). With this, we can write `N∙s` in output and input.
+* Export types to get readable and usable type signatures. This exporting may conflict with other unit packages.
 * Prefer length prefixes `μ` and `mm`
 * Prefer force and moment prefix `k`
-* Prefer stress prefix `M`
-* Prefer `Pa`over `N/m²`
-* Define the bullet operator `∙` (U+2219, \vysmblkcircle + tab in Julia). This is simply to avoid less recognizable units like `N*m` while also being able to use printed results as input.
-* Thousands separator is supported, but limited to an acceptable format for Julia input: ```983_322Nm```
-* Four significant digits output, but don't round when it would display zeros: 983_322N
-* Array output moves the units outside where possible: [0.0009, 239_912]mm, not [0.900mm, 239.9 m]
-* Substitute symbols which can't be displayed in Windows terminals: 𝐓 -> Time, 𝐋 -> Length, 𝐌 -> Mass
+* Prefer `MPa`over `N/m²`
+* Thousands separator is supported, but limited to an acceptable format for Julia input: ```983_322N∙m```
+* Array output moves the units outside: `[0.900mm, 9832inches]` -> `[0.9, 239_912]mm`,
+* Substitute symbols which can't be displayed in Windows terminals: `𝐓 -> Time`, `𝐋 -> Length`, `𝐌 -> Mass`
 * We would like to support unitful complex numbers, as they often appear while solving equations. 
-* Energy and moment units are both important in the contexts, but using `J` conveys meaning. We would like to provide a special REPL mode for picking an output preference while typing, for examply by typing `ctrl + .` and then correcting a suggested output. 
-* The `ctrl + .` REPL mode would resemble typing on the right-hand side of an equation. It gives no meaning after function definitions. Any defined parameter could be treated as a unit. 
+* Energy and moment units are mathematically identical, but picking `J` over `N∙m` conveys meaning. We would like to provide a special REPL mode for picking an output preference while typing, for examply by typing `ctrl + .` and then correcting a suggested output. 
+* The `ctrl + .` REPL mode would resemble typing part of the right-hand side of an equation. That gives no meaning after function definitions.
 
 
 ## Alternatives
