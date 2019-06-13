@@ -1,8 +1,5 @@
 using MechanicalUnits
 using Test
-# temp1
-import MechanicalUnits: abbr, unit, sortexp, tens, showrep, dimension
-#import MechanicalUnits: Dimension, Dimensions
 shortp(x) = repr(x, context = :color=>true)
 longp(x) = repr(:"text/plain", x, context = :color=>true)
 
@@ -76,11 +73,6 @@ end
         expec1 = "FreeUnits{(\e[36m" * bu * di* "\e[39m,),"
         expec2 = dimdi[eval(Meta.parse(bu)) ]
         expec3 =  expdidi[di] * ",nothing}"
-        println("  --  ")
-        println("bu = ", bu)
-        println("di = ", di)
-        println("res = ", res)
-        println(expec1*expec2*expec3)
         @test res == expec1*expec2*expec3
     end
 end

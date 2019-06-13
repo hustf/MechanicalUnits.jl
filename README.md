@@ -7,23 +7,20 @@
   - [Usage](#usage)
   - [Goals](#goals)
   - [Alternatives](#alternatives)
-    - [Projects using this library](#projects using this library)
   - [FAQ](#faq)
   - [Contributing](#contributing)
   - [License](#license)
 
 
-### Using units helps you
-A calculator just eats up the difficulties in pre-algebra. You'll get the divisions and fractions right every time. When using pure SI units, engineering problems can still be solved that way. But you soon loose track of what every number 'means'. 
+### a calculator with units in the REPL
+If you're working with quantities, units can be of help. Still, we tend to drop them while doing side calculations or writing programs. Using units has to come at practically no cost if we're not going to drop them while doing quick side calculations. That's the aim of this package.
 
-Using units gives
-
+Keeping the units in gives:
 * Fewer mistakes
 * More pattern recognition
 * Hints to find wrong input
 * Quicker problem solving
 * More ways to understand a physical problem or read a calculation
-
 
 ## Usage
 ```julia
@@ -57,32 +54,25 @@ This adaption of [Unitful.jl](https://github.com/PainterQubits/Unitful.jl) aims 
 
 This means:
 * We adapt to the limitation of specific consoles: Windows Powershell, Julia REPL or VSCode.
-* We make a specialized set of units commonly encountered by the mechanical or structural engineer.
+* We import and reexport a specialized set of units commonly encountered by the mechanical or structural engineer.
 * Four significant digits output for floating numbers, no trailing zeros. Don't round when that would display zeros to the left of decimal point: `(991mm)^2` -> `983_322mm²`
 * `h` is an hour, not Planck's constant
 * `in` is reserved by Julia, `inch` is a unit
-* REPL output can be copied to input: `2.32 m s^-1` is printed as `2.32m/s`
+* REPL output can be always be parsed as input: `2.32 m s^-1` is printed as `2.32m/s`
 * Define the bullet operator `∙` (U+2219, \vysmblkcircle + tab). With this, we can write `N∙s` in output and input.
 * Export types to get readable and usable type signatures. This exporting may conflict with other unit packages.
-* Prefer length prefixes `μ` and `mm`
+* Prefer length prefixes `μ` and `mm` by default
 * Prefer force and moment prefix `k`
 * Prefer `MPa`over `N/m²`
 * Thousands separator is supported, but limited to an acceptable format for Julia input: ```983_322N∙m```
 * Array output moves the units outside: `[0.900mm, 9832inches]` -> `[0.9, 239_912]mm`,
 * Substitute symbols which can't be displayed in Windows terminals: `𝐓 -> Time`, `𝐋 -> Length`, `𝐌 -> Mass`
 * We would like to support unitful complex numbers, as they often appear while solving equations. 
-* Energy and moment units are mathematically identical, but picking `J` over `N∙m` conveys meaning. We would like to provide a special REPL mode for picking an output preference while typing, for examply by typing `ctrl + .` and then correcting a suggested output. 
-* The `ctrl + .` REPL mode would resemble typing part of the right-hand side of an equation. That gives no meaning after function definitions.
-
 
 ## Alternatives
 
 [Unitful.jl](https://github.com/PainterQubits/Unitful.jl) lists similar adaptions for other fields.
 
-
-### Projects using this library
-
-None.
 
 ## Am I missing some essential feature?
 
