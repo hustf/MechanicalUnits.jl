@@ -4,7 +4,7 @@
 module MechanicalUnits
 export ∙
 # Convenience / info / testing
-export @u_str, uconvert, upreferred, basefactor, ustrip, unit
+export @u_str, uconvert, upreferred, basefactor, ustrip, unit, preferunits
 # To shorten type signature ouput
 export Time, Length, Mass, Temperature
 export FreeUnits, AffineUnits, Unitlike, Unit, Quantity, Dimensions
@@ -23,7 +23,7 @@ using Unitful
 import Unitful: FreeUnits, AffineUnits, Unitlike, Unit, Quantity, Dimension, Dimensions
 import Unitful: isunitless, unit, sortexp, showrep, abbr, prefix, power, superscript
 # Convenience
-import Unitful: uconvert, upreferred, basefactor, ustrip
+import Unitful: uconvert, upreferred, basefactor, ustrip, preferunits
 # temporary imports
 #import Unitful: tens, dimension
 
@@ -67,7 +67,7 @@ const global s⁴ = s^4
 const global kg² = kg^2
 const global kg³ = kg^3
 const global kg⁴ = kg^4
-const global Ra² = kg^2
+const global Ra² = Ra^2
 const global Ra³ = Ra^3
 const global Ra⁴ = Ra^4
 const global K² = K^2
@@ -120,9 +120,6 @@ Base.delete_method( which( show, (IO, MIME"text/plain", Quantity)))
 
 function show(io::IO, x::Quantity)
     show(io, x.val)
-    # TODO fix this unfortunate case: 
-    # 1000μm * 1m |> m² --> 1//1000m²
-    # So, if val is a rational, add paranthesis.
     if !isunitless(unit(x))
         show(io, unit(x))
     end
@@ -133,7 +130,24 @@ function show(io::IO, mime::MIME"text/plain", x::Quantity)
         show(io, mime, unit(x))
     end
 end
-
+function show(io::IO, x::Quantity{T,D,U}) where {T<:Rational, D, U}
+    # Add paranthesis: 1//1000m² -> (1//1000)m²
+    print(io, "(")
+    show(io, x.val)
+    print(io, ")")
+    if !isunitless(unit(x))
+        show(io, unit(x))
+    end
+end
+function show(io::IO, mime::MIME"text/plain", x::Quantity{T,D,U}) where {T<:Rational, D, U}
+    # Add paranthesis: 1//1000m² -> (1//1000)m²
+    print(io, "(")
+    show(io, x.val)
+    print(io, ")")
+    if !isunitless(unit(x))
+        show(io, mime, unit(x))
+    end
+end
 
 #=
 We want to print quantities with "product units" without a space between value and unit.

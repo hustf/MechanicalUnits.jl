@@ -72,41 +72,16 @@ end
             μm => "Length", minute => "Time"])
     expdidi = Dict(["²" => "^2", "³" => "^3", "⁴" => "^4"])
     for bu in ["m", "s", "kg", "Ra", "K", "h", "μm", "minute"], di in ["²", "³", "⁴"]
-        usy = Symbol(bu*di)
-        println(typeof(eval(usy)))
+        res = shortp(typeof(eval(Symbol(bu*di))))
+        expec1 = "FreeUnits{(\e[36m" * bu * di* "\e[39m,),"
+        expec2 = dimdi[eval(Meta.parse(bu)) ]
+        expec3 =  expdidi[di] * ",nothing}"
+        println("  --  ")
+        println("bu = ", bu)
+        println("di = ", di)
+        println("res = ", res)
+        println(expec1*expec2*expec3)
+        @test res == expec1*expec2*expec3
     end
 end
 
-
-
-
-# TODO: Test superscripts, dimensions.
-
-
-#= 
-Currently dead code
-
-[Ra, K, h, μm, minute]
-for q1 in testunits, q2 in testunits
-    q1 == q2 && continue
-    print("q1, q2, res = ", q1, " , ", q2, " , ")
-    show(stderr,  :"text/plain", longp(2q1∙3q2))
-    println()
-    println("@test shortp(2q1 * 3q2) == res")
-  #println(2*q1*3*q2)
-end
-testunits = 
-m², m³, m⁴, s², s³, s⁴, g², kg³, kg⁴
-°C, °F
-Ra, Ra², Ra³, Ra⁴, K, K², K³, K⁴
-h, μm, minute
-h², μm², minute²
-h³, μm³, minute³
-h⁴, μm⁴, minute⁴
-di in ["²", "³", "⁴"], 
-for bu in ["m", "s", "kg", "Ra", "K", "h", "μm", "minute"]
-   # usy = Symbol(di*bu)
-    print(bu, " => \"Mass\", ")
-end
-show(stderr, :"text/plain", longp(1kg∙K∙m/s))
-=#
