@@ -30,40 +30,18 @@ include("output_parseable_format.jl")
 
 
 
-function show(io::IO, p::Vector{Quantity{T,D,U}})  where {T,D,U} # short form
-    numtype = eltype(ustrip(p))
-    numcont = IOContext(io, :typeinfo => numtype)
-    show(IOContext(io, :typeinfo => numcont, ustrip(p))
-    if !isunitless(unit(eltype(p)))
-        etyp = eltype(p)
-        ucont = IOContext(io, :typeinfo => eltype(p))
-    end
-
-    etyp = eltype(p)
-    ioc = IOContext(io, :typeinfo => etyp)
+function show(io::IO, p::Array{Quantity{T,D,U}, N})  where {T,D,U,N} # short form
+    numerictype = eltype(ustrip(p))
+    ioc = IOContext(io, :typeinfo => numerictype)
     show(ioc, ustrip(p))
-    @info U
-
-
+    # Now show the unit.
+    show_unit(io, first(p))
 end
-# TODO fix
-function show(io::IO, ::MIME"text/plain", p::Vector{Quantity{T,D,U}})  where {T,D,U} # long form
-
-    typ = typeof(p)
-    ioc = IOContext(io, :typeinfo => typ)
-    print(ioc, "Vector{Quantity{", T, ", ",  D, ", ", U, "}}(")
-    show(ioc, ustrip(p))
-    printstyled(ioc, unit(eltype(typ)); color=:cyan)
-    print(ioc, ")")
-end
-
-
-
-
-
+show(io::IO, ::MIME"text/plain", p::Array{Quantity{T,D,U}, N})  where {T,D,U,N} = show(io, p)# long form, REPL output
 #=
 
-Todo: use :typeinfo to convey if units should be printed, or already has. 
+Todo:
+Output for tuples, dictionaries.
 baremodule subset...
 end
 

@@ -24,26 +24,35 @@ Base.delete_method( which( show, (IO, MIME"text/plain", Quantity)))
 
 function show(io::IO, x::Quantity)
     show(io, x.val)
-    # TODO: Use typeinfo in the same way as normal vector show.... Not true or false.
-    # Consider division by the supplied type.
-    if !isunitless(unit(x))
-        if !get(io, :typeinfo, false)
-            show(io, unit(x))
-        end
-    end
+    show_unit(io, x)
 end
-
 function show(io::IO, x::Quantity{T,D,U}) where {T<:Rational, D, U}
     # Add paranthesis: 1//1000m² -> (1//1000)m²
     print(io, "(")
     show(io, x.val)
     print(io, ")")
-    if !isunitless(unit(x))
-        if !get(io, :typeinfo, false)
+    show_unit(io, x)
+end
+"""
+Show the unit of x provided io does have a dictionary entry with the type info.
+In that case, the unit information has already been shown.
+"""
+function show_unit(io::IO, x)
+    # TODO: 
+    # Consider division by the supplied context type.
+    typeinfo = get(io, :typeinfo, Any)::Type
+    if !(x isa typeinfo)
+        typeinfo = Any
+    end
+    eltype_ctx = Base.typeinfo_eltype(typeinfo)
+    eltype_x = eltype(x)
+    if eltype_ctx != eltype_x
+        if !isunitless(unit(x))
             show(io, unit(x))
         end
     end
 end
+
 
 #=
 We want to print `typeof` output in a format that works as a constructor. 
