@@ -59,8 +59,25 @@ end
 end
 
 
-@testset "Modified Dimension type signatures" begin
-    @test shortp(typeof(1kg∙K∙m/s)) == "Quantity{Int64,Length*Mass*Temperature*Time^-1,FreeUnits{(\e[36mkg\e[39m, \e[36mK\e[39m, \e[36mm\e[39m, \e[36ms^-1\e[39m),Length*Mass*Temperature*Time^-1,nothing}}"
+@testset "Constructors from type signatures" begin
+using MechanicalUnits
+using Test
+    @test shortp(typeof(1kg∙K∙m/s)) == "Quantity{Int64,Length*Mass*Temperature*Time^-1,FreeUnits{(Unit{:Gram,Mass}" *
+                                    "(3, 1//1), Unit{:Kelvin,Temperature}(0, 1//1), " *
+                                    "Unit{:Meter,Length}(0, 1//1), Unit{:Second,Time}(0, -1//1))," *
+                                    "Length*Mass*Temperature*Time^-1,nothing}}"
+    q1 = Quantity{Int64, Length, FreeUnits{(Unit{:Meter, Length}(0,1),), Length, nothing}}(2)
+    q2 = 2m
+    @test q1 == q2
+    @test q1 === q2
+    strcon = repr(:"text/plain", typeof(q2), context = :color=>false)
+    tq1 = typeof(q1)
+    @test strcon == "Quantity{Int64,Length,FreeUnits{(Unit{:Meter,Length}(0, 1//1),),Length,nothing}}"
+    sy = Meta.parse(strcon)
+    ex = :($sy(2))
+    q3 = eval(ex)
+    @test q1 == q3
+    @test q1 === q3
 end
 
 @testset "Type signatures, dimensions 1 to 4" begin
