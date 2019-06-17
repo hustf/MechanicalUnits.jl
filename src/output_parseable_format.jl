@@ -38,7 +38,7 @@ Show the unit of x provided io does have a dictionary entry with the type info.
 In that case, the unit information has already been shown.
 """
 function show_unit(io::IO, x)
-    # TODO: 
+    # TODO: Fix.
     # Consider division by the supplied context type.
     typeinfo = get(io, :typeinfo, Any)::Type
     if !(x isa typeinfo)
@@ -66,7 +66,20 @@ julia> typeof(2m)(40)
 =#
 Base.delete_method( which( show, (IO, Type{T} where T<:Quantity)))
 function show(io::IO, x::Type{T}) where T<:Quantity
-    invoke(show, Tuple{IO, typeof(x)}, IOContext(io, :showoperators=>true, :showconstructor=>true), x)
+    if get(io, :shorttype, false)
+        # Given the shorttype context argument (as in an array of quanities description), 
+        # the numeric type and unit symbol is enough info to superficially represent the type.
+        # TODO test.
+        show_unit(io, T)
+        print(io, "{", numtype(x),"}")
+    else
+        # We show a complete or partial description.
+        # This pair in IOContext specifies as fallback a full formal type representation,
+        # provided the opposite is not already specified by the caller:
+        pa = Pair(:showconstructor, get(io, :showconstructor, true))
+        ioc = IOContext(io, :showoperators=>true, pa)
+        invoke(show, Tuple{IO, typeof(x)}, ioc, x)
+    end
 end
 #=
 We want to print "1kg*2m -> 2kg·m".
@@ -106,6 +119,10 @@ Base.delete_method( which( showrep, (IO, Unit)))
 Show the unit, prefixing with any decimal prefix and appending the exponent as
 formatted by `superscript`.
 Also prints with color when allowed by io.
+Pass in 
+    IOContext(..., :showconstructor=>true) 
+to show a longer more formal form of the unit type, which can be used as a constructor.
+This is done internally when the output of vanilla Julia types would also double as constructor.
 """
 function showrep(io::IO, x::Unit)
     p = power(x)
@@ -121,8 +138,11 @@ function showrep(io::IO, x::Unit)
                 superscript(p)
             end
     if get(io, :showconstructor, false)
+        # Print a longer, more formal definition which can be used as a constructor
         print(io, typeof(x), "(", tens(x), ", ", power(x), ")")
     else
+        # Print a shorter definition which can't be used directly as a constructor
+        # This is closer to Unitful's default.
         printstyled(io, color = :cyan, prefix(x), abbr(x), supers)
     end
 end

@@ -60,8 +60,11 @@ end
 
 
 @testset "Constructors from type signatures" begin
-using MechanicalUnits
-using Test
+    buf =IOBuffer()
+    print(IOContext(buf, :showconstructor => true), 1m)
+    @test String(take!(buf)) == "1Unit{:Meter,Length}(0, 1//1)"
+    print(buf, 1m)
+    @test String(take!(buf)) == "1m"
     @test shortp(typeof(1kg∙K∙m/s)) == "Quantity{Int64,Length*Mass*Temperature*Time^-1,FreeUnits{(Unit{:Gram,Mass}" *
                                     "(3, 1//1), Unit{:Kelvin,Temperature}(0, 1//1), " *
                                     "Unit{:Meter,Length}(0, 1//1), Unit{:Second,Time}(0, -1//1))," *

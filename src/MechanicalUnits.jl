@@ -4,7 +4,7 @@
 module MechanicalUnits
 export ∙
 # Convenience / info / testing
-export @u_str, uconvert, upreferred, basefactor, ustrip, unit, preferunits, dimension
+export @u_str, uconvert, upreferred, basefactor, ustrip, unit, preferunits, dimension, numtype
 export mech_units
 # To shorten type signature ouput
 export FreeUnits, AffineUnits, AffineQuantity, Unitlike, Unit, Quantity, Dimensions, Dimension
@@ -14,7 +14,7 @@ using InteractiveUtils
 #using Formatting (or implement elsewhere....)
 using Unitful
 import Unitful: FreeUnits, AffineUnits, Unitlike, Unit, Quantity, Dimension, Dimensions
-import Unitful: isunitless, unit, sortexp, showrep, abbr, prefix, power, superscript, tens
+import Unitful: isunitless, unit, sortexp, showrep, abbr, prefix, power, superscript, tens, numtype
 import Unitful: promote_unit, preferunits, dimension
 # temporary imports
 import Unitful: Units
@@ -29,19 +29,31 @@ include("dimensions_for_windows.jl")
 include("output_parseable_format.jl")
 
 
-
-function show(io::IO, p::Array{Quantity{T,D,U}, N})  where {T,D,U,N} # short form
-    numerictype = eltype(ustrip(p))
+function show(io::IO, x::AbstractArray{Quantity{T,D,U}, N})  where {T,D,U,N} # short form
+    # consider taking numeric type from T via numtype
+    numerictype = eltype(ustrip(x))
     ioc = IOContext(io, :typeinfo => numerictype)
-    show(ioc, ustrip(p))
+    show(ioc, ustrip(x))
     # Now show the unit.
-    show_unit(io, first(p))
+    show_unit(io, first(x))
 end
-show(io::IO, ::MIME"text/plain", p::Array{Quantity{T,D,U}, N})  where {T,D,U,N} = show(io, p)# long form, REPL output
-#=
+function show(io::IO, mime::MIME"text/plain", x::AbstractArray{Quantity{T,D,U}, N})  where {T,D,U,N} # long form
+    # For abstract arrays, the REPL output can't normally be used to make a new and identical instance of 
+    # the array. So we don't bother to do that either, in this context.
 
+    # This pair in IOContext specifies an informal type representation,
+    # if the opposite is not already specified from upstream.
+    pai = Pair(:shorttype, get(io, :shorttype, true))
+    ioc = IOContext(io, pai)
+    # Now call the method which would normally have been called if we didn't slightly interfere here. 
+    invoke(show, Tuple{IO, MIME{Symbol("text/plain")}, AbstractArray}, ioc, mime, x)
+end
+#=
 Todo:
-Output for tuples, dictionaries.
+Consider specializing on Base showarg(io, Quantity, toplevel), or on summary(io, Quantity)
+
+
+Check Output for tuples, dictionaries.
 baremodule subset...
 end
 
