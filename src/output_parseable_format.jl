@@ -34,12 +34,10 @@ function show(io::IO, x::Quantity{T,D,U}) where {T<:Rational, D, U}
     show_unit(io, x)
 end
 """
-Show the unit of x provided io does have a dictionary entry with the type info.
+Show the unit of x provided io does not have a dictionary entry with the type info.
 In that case, the unit information has already been shown.
 """
 function show_unit(io::IO, x)
-    # TODO: Fix.
-    # Consider division by the supplied context type.
     typeinfo = get(io, :typeinfo, Any)::Type
     if !(x isa typeinfo)
         typeinfo = Any
@@ -48,7 +46,17 @@ function show_unit(io::IO, x)
     eltype_x = eltype(x)
     if eltype_ctx != eltype_x
         if !isunitless(unit(x))
-            show(io, unit(x))
+            # For elements in abstract arrays, we use typeinfo to get the 
+            # wanted format for the header info. In this method, we do not
+            # want to redundantly display the remaining type info. 
+            # TODO but how? Consider specializing on 
+            # Base showarg(io, Quantity, toplevel), or on summary(io, Quantity)
+            if !get(io, :dontshowlocalunits, false)
+                # The return type is an instance U() of the singleton type U in Quantity{T,D,U},
+                # i.e. 'show' dispatches to (io, ::FreeUnits{N,D,A}).
+                # Which is great, but the numeric type of x is lost.
+                show(io, unit(x))
+            end
         end
     end
 end
@@ -69,9 +77,10 @@ function show(io::IO, x::Type{T}) where T<:Quantity
     if get(io, :shorttype, false)
         # Given the shorttype context argument (as in an array of quanities description), 
         # the numeric type and unit symbol is enough info to superficially represent the type.
-        # TODO test.
-        show_unit(io, T)
-        print(io, "{", numtype(x),"}")
+        print(io, numtype(x),"{")
+        ioc = IOContext(io, :dontshowlocalunits=>false)
+        show_unit(ioc, T)
+        print(io, "}")
     else
         # We show a complete or partial description.
         # This pair in IOContext specifies as fallback a full formal type representation,
@@ -106,8 +115,8 @@ function show(io::IO, x::Unitlike)
     end
     nothing
 end
-show(io::IO, x::typeof(°C)) = printstyled(io, color = :cyan, "°C")
-show(io::IO, x::typeof(°F)) = printstyled(io, color = :cyan, "°F")
+# Consider dispatching on AffineUnits{N,D,A}
+show(io::IO, x::FreeUnits{N,D,A}) where {N, D, A<:Affine} = showrep(io, x)
 
 #=
 We want to print units with a somewhat distinguished colour or font.
@@ -138,17 +147,20 @@ function showrep(io::IO, x::Unit)
                 superscript(p)
             end
     if get(io, :showconstructor, false)
-        # Print a longer, more formal definition which can be used as a constructor
+        # Print a longer, more formal definition which can be used as a constructor or inform the interested user.
         print(io, typeof(x), "(", tens(x), ", ", power(x), ")")
     else
-        # Print a shorter definition which can't be used directly as a constructor
-        # This is closer to Unitful's default.
-        printstyled(io, color = :cyan, prefix(x), abbr(x), supers)
+        # Print the shortest representation of the unit (of a number), i.e. prefix, unit symbol, superscript.
+        # Color output is context-aware. 
+        col = get(io, :unitsymbolcolor, :cyan)
+        printstyled(io, color = col, prefix(x), abbr(x), supers)
     end
 end
 
 
+
 Base.delete_method( which( showrep, (IO, Dimension)))
+
 """
     showrep(io::IO, x::Dimension)
 Show the dimension, appending any exponent as formatted by `superscript`.
@@ -156,4 +168,15 @@ Show the dimension, appending any exponent as formatted by `superscript`.
 function showrep(io::IO, x::Dimension)
     print(io, abbr(x))
     print(io, (power(x) == 1//1 ? "" : superscript(power(x))))
+end
+function showrep(io::IO, x::FreeUnits{N,D,A}) where {N, D, A<:Affine}
+    if get(io, :showconstructor, false)
+        # Print a longer, more formal definition which can be used as a constructor or inform the interested user.
+        print(io, "FreeUnits{", N, ",", D, ",", A, "}")
+    else
+        # Print the shortest representation of the affine unit.
+        # Color output is context-aware. 
+        col = get(io, :unitsymbolcolor, :cyan)
+        printstyled(io, color = col, abbr(x))
+    end
 end
