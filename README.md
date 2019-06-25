@@ -3,7 +3,7 @@
 [![Build Status](https://ci.appveyor.com/api/projects/status/github/hustf/MechanicalUnits.jl?svg=true)](https://ci.appveyor.com/project/hustf/MechanicalUnits-jl)
 [![Coveralls](https://coveralls.io/repos/github/hustf/MechanicalUnits.jl/badge.svg?branch=master)](https://coveralls.io/github/hustf/MechanicalUnits.jl?branch=master)
 
-
+  - [Units](#units)
   - [Usage](#usage)
   - [Goals](#goals)
   - [Alternatives](#alternatives)
@@ -24,49 +24,86 @@ The benefits?
 * You could pick plot recipes based on units
 * You could pick table formats based on units
 
+
+## Units
+| Dimension | Unit |
+| ------------- | ------------- |
+| Length     |   nm μm μm mm cm dm m km Mm Gm Tm Pm inch ft    | 
+| Time    |   ns μs μs ms s minute d h yr    | 
+| Mass    |   mg cg kg lb shton    | 
+| Temperature    |   K Ra °C °F    | 
+| Angles    |   rad °     | 
+| Force    |   N daN kN MN  lbf kip    | 
+| Pressure    |   Pa kPa MPa GPa atm bar     | 
+| Energy    |   J kJ MJ GJ    | 
+| Volume    |   l dl cl ml      | 
+| Acceleration     |   g    | 
+
+
+
 ## Usage
-Let us do some side calculations. It's a pity we can't show the colors here:
+```
+julia > ]add MechanicalUnits
+```
+Colors won't show here. But let us do some side calculations:
 ```julia
 julia> using MechanicalUnits
+
 julia> c_p = 1.00kJ/(kg*K) ; T1 = 0°C ; T2 = 1000°C ; m_air = 1kg;
+
 julia> m_air*c_p*(T2-T1)
 1000.0kJ
+
 julia> begin
        "Work, heating air at constant pressure"
        Q_cp(T1, T2) = m_air*c_p*(T2-T1)
        end
 Q_cp
+
 julia> Q_cp(20°C, 25°C)
 5.0kJ
 
 julia> year_and_a_day = 1yr + 6*7d
 (35186400//1)s
+
 julia> 2year_and_a_day |> yr
 (1086//487)yr
 
 julia> 1dm|>upreferred
 (100//1)mm
+
 julia> exit()
+
 PS C:\Users\F> julia --banner=no
+
 julia> using MechanicalUnits
 
 julia> preferunits(m)
 
 julia> 1dm|>upreferred
 (1//10)m
+
 julia> exit()
+
 PS C:\Users\F> julia --banner=no
+
 julia> using MechanicalUnits
+
 julia> # Estimate deflection
+
 julia> E=206GPa; h = 100mm; b = 30mm; I = 1/12 * b * h^3
 2.5e6mm⁴
+
 julia> F=100kg*g; L = 2m
 2m
+
 julia> F*L^3/(3E*I) |> mm
 5.0778770226537215mm
 
 julia> # Pick a corresponding wire rope
+
 julia> l_wire = 20m
+
 julia> k(d) = E * 0.691 * π/4 * d^2 / l_wire |> N/mm
 
 julia> k(30mm)
@@ -89,15 +126,16 @@ Stacktrace:
 julia> dimension(d)
 Time
 
-julia> print(mech_units)
-Symbol[:nm, :μm, :μm, :mm, :cm, :dm, :m, :km, :Mm, :Gm, :Tm, :Pm, 
-:ns, :μs, :μs, :ms, :s, :mg, :cg, :kg, :rad, :°, :K, :Ra, :minute,
-:d, :atm, :bar, :N, :daN, :kN, :MN, :Pa, :kPa, :MPa, :GPa, :J, :kJ,
-:MJ, :GJ, :°C, :°F, :h, :yr, :l, :dl, :cl, :ml, :g]
+julia> @import_from_unitful G
+
+julia> sqrt(1G²)
+6.67408e-11m³∙kg^-1∙s^-2
 ```
 
-You may get warning messages like the above when also loading other packages. If that happens, switch to importing just what you need:
-```import MechanicalUnits: N, kg, m, s, MPa```
+You may get warning messages when also loading other packages. If that happens, switch from `using MechanicalUnits`to just what you need:
+```julia
+import MechanicalUnits: N, kg, m, s, MPa
+```
 
 
 ## Goals (11/19 reached)

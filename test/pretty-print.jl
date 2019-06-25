@@ -2,7 +2,7 @@ using MechanicalUnits
 using Test
 shortp(x) = repr(x, context = :color=>true)
 longp(x) = repr(:"text/plain", x, context = :color=>true)
-
+global const sInt = typeof(Int(1)) == Int64 ? "Int64" : "Int32"
 @testset "Most basic" begin
     testunits = [m ,  s ,  kg ]
     teststrings = ["m" ,  "s" ,  "kg" ]
@@ -68,17 +68,17 @@ end
     @test String(take!(buf)) == "1Unit{:Meter,Length}(0, 1//1)"
     print(buf, 1m)
     @test String(take!(buf)) == "1m"
-    @test shortp(typeof(1kg∙K∙m/s)) == "Quantity{Int64,Length*Mass*Temperature*Time^-1,FreeUnits{(Unit{:Gram,Mass}" *
+    @test shortp(typeof(1kg∙K∙m/s)) == "Quantity{$(sInt),Length*Mass*Temperature*Time^-1,FreeUnits{(Unit{:Gram,Mass}" *
                                     "(3, 1//1), Unit{:Kelvin,Temperature}(0, 1//1), " *
                                     "Unit{:Meter,Length}(0, 1//1), Unit{:Second,Time}(0, -1//1))," *
                                     "Length*Mass*Temperature*Time^-1,nothing}}"
-    q1 = Quantity{Int64, Length, FreeUnits{(Unit{:Meter, Length}(0,1),), Length, nothing}}(2)
+    q1 = Quantity{Int, Length, FreeUnits{(Unit{:Meter, Length}(0,1),), Length, nothing}}(2)
     q2 = 2m
     @test q1 == q2
     @test q1 === q2
     strcon = repr(:"text/plain", typeof(q2), context = :color=>false)
     tq1 = typeof(q1)
-    @test strcon == "Quantity{Int64,Length,FreeUnits{(Unit{:Meter,Length}(0, 1//1),),Length,nothing}}"
+    @test strcon == "Quantity{$(sInt),Length,FreeUnits{(Unit{:Meter,Length}(0, 1//1),),Length,nothing}}"
     sy = Meta.parse(strcon)
     ex = :($sy(2))
     q3 = eval(ex)
@@ -93,17 +93,17 @@ end
     @test String(take!(buf)) == "1FreeUnits{(Unit{:Kelvin,Temperature}(0, 1//1),),Temperature,Affine{-5463//20}}"
     print(buf, 1°C)
     @test String(take!(buf)) == "1°C"
-    @test shortp(typeof(1kg∙K∙m/s)) == "Quantity{Int64,Length*Mass*Temperature*Time^-1,FreeUnits{(Unit{:Gram,Mass}" *
+    @test shortp(typeof(1kg∙K∙m/s)) == "Quantity{$(sInt),Length*Mass*Temperature*Time^-1,FreeUnits{(Unit{:Gram,Mass}" *
                                     "(3, 1//1), Unit{:Kelvin,Temperature}(0, 1//1), " *
                                     "Unit{:Meter,Length}(0, 1//1), Unit{:Second,Time}(0, -1//1))," *
                                     "Length*Mass*Temperature*Time^-1,nothing}}"
-    q1 = Quantity{Int64, Temperature, FreeUnits{(Unit{:Kelvin, Temperature}(0,1),), Temperature, Affine{-5463//20}}}(2)
+    q1 = Quantity{Int, Temperature, FreeUnits{(Unit{:Kelvin, Temperature}(0,1),), Temperature, Affine{-5463//20}}}(2)
     q2 = 2°C
     @test q1 == q2
     @test q1 === q2
     strcon = repr(:"text/plain", typeof(q2), context = :color=>false)
     tq1 = typeof(q1)
-    @test strcon == "Quantity{Int64,Temperature,FreeUnits{(Unit{:Kelvin,Temperature}(0, 1//1),),Temperature,Affine{-5463//20}}}"
+    @test strcon == "Quantity{$(sInt),Temperature,FreeUnits{(Unit{:Kelvin,Temperature}(0, 1//1),),Temperature,Affine{-5463//20}}}"
     sy = Meta.parse(strcon)
     ex = :($sy(2))
     q3 = eval(ex)
@@ -130,20 +130,18 @@ end
     a1 = [1 2]m
     st ="[2 4]\e[36mm\e[39m"
     @test shortp(2a1) == st
-    st = "1×2 Array{Int64{\e[36mm\e[39m},2}:\n 2  4"
+    st = "1×2 Array{$(sInt){\e[36mm\e[39m},2}:\n 2  4"
     @test longp(2a1) == st
     a2 = [1 2]m*s^-1
     st = "[2 4]\e[36mm\e[39m∙\e[36ms^-1\e[39m"
     @test shortp(2a2) == st
-    st = "1×2 Array{Int64{\e[36mm\e[39m∙\e[36ms^-1\e[39m},2}:\n 2  4"
+    st = "1×2 Array{$(sInt){\e[36mm\e[39m∙\e[36ms^-1\e[39m},2}:\n 2  4"
     @test longp(2a2) == st
 end
 
+# TODO test chosen color for units
 #@testset "Pick color for units" begin
-
-
 #1m∙5N
 #repr(1m, context = :color=>true, :unitsymbolcolor => :blue)
 #end
-# TODO test chosen color for units
 # Add division by units for matrices, based on *(A::AbstractArray, B::Unitful.Units) in Unitful at C:\Users\F\.julia\packages\Unitful\W0mMi\src\quantities.jl:36
