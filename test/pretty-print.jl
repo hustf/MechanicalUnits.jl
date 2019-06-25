@@ -137,8 +137,13 @@ end
     @test shortp(2a2) == st
     st = "1×2 Array{Int64{\e[36mm\e[39m∙\e[36ms^-1\e[39m},2}:\n 2  4"
     @test longp(2a2) == st
-
 end
 
+#@testset "Pick color for units" begin
+
+
+#1m∙5N
+#repr(1m, context = :color=>true, :unitsymbolcolor => :blue)
+#end
 # TODO test chosen color for units
 # Add division by units for matrices, based on *(A::AbstractArray, B::Unitful.Units) in Unitful at C:\Users\F\.julia\packages\Unitful\W0mMi\src\quantities.jl:36

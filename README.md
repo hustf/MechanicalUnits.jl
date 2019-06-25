@@ -13,67 +13,135 @@
 
 
 ### Low-effort calculator with units in the REPL
-If you're working with quantities, units can be of help. Still, we tend to drop them while doing side calculations or writing programs. Using units has to come at practically no cost if we're not going to drop them while doing quick side calculations. That's the aim of this package.
+Units should be part of the quick side calculations mechanical and other engineers do every few minutes of a work day. But we need quick, nice and easy. That's the aim of this package, built on [Unitful.jl](https://github.com/PainterQubits/Unitful.jl).
 
-Keeping the units in gives:
+The benefits?
 * Fewer mistakes
 * More pattern recognition
 * Hints to find wrong input
 * Quicker problem solving
-* More ways to understand a physical problem or read a calculation
+* More ways to understand a problem or read a calculation
+* You could pick plot recipes based on units
+* You could pick table formats based on units
 
 ## Usage
+Let us do some side calculations. It's a pity we can't show the colors here:
 ```julia
-using MechanicalUnits
-# which car to use?
-70l / 42MJ/kg / 0.745kg/l / 0.8l/10km
+julia> using MechanicalUnits
+julia> c_p = 1.00kJ/(kg*K) ; T1 = 0°C ; T2 = 1000°C ; m_air = 1kg;
+julia> m_air*c_p*(T2-T1)
+1000.0kJ
+julia> begin
+       "Work, heating air at constant pressure"
+       Q_cp(T1, T2) = m_air*c_p*(T2-T1)
+       end
+Q_cp
+julia> Q_cp(20°C, 25°C)
+5.0kJ
 
-75kWh/12.2kWh/100km
+julia> year_and_a_day = 1yr + 6*7d
+(35186400//1)s
+julia> 2year_and_a_day |> yr
+(1086//487)yr
 
-# Which wire rope diameter to pick?
-E=206GPa
-A = 1mm*1mm*0.741
-E*A/10100mmm
-20.40N/mm
-ans*100kg*g
-2000mm
+julia> 1dm|>upreferred
+(100//1)mm
+julia> exit()
+PS C:\Users\F> julia --banner=no
+julia> using MechanicalUnits
+
+julia> preferunits(m)
+
+julia> 1dm|>upreferred
+(1//10)m
+julia> exit()
+PS C:\Users\F> julia --banner=no
+julia> using MechanicalUnits
+julia> # Estimate deflection
+julia> E=206GPa; h = 100mm; b = 30mm; I = 1/12 * b * h^3
+2.5e6mm⁴
+julia> F=100kg*g; L = 2m
+2m
+julia> F*L^3/(3E*I) |> mm
+5.0778770226537215mm
+
+julia> # Pick a corresponding wire rope
+julia> l_wire = 20m
+julia> k(d) = E * 0.691 * π/4 * d^2 / l_wire |> N/mm
+
+julia> k(30mm)
+10061.845827027584N∙mm^-1
+
+julia> δ(d)= F / k(d) |> mm
+δ (generic function with 1 method)
+
+julia> δ.([5, 6, 8]mm)
+3-element Array{Float64{mm},1}:
+  7.017388381199098
+  4.873186375832707
+ 2.7411673364058977
+
+julia> d = 6mm
+ERROR: cannot assign variable Unitful.d from module Main
+Stacktrace:
+ [1] top-level scope at none:0
+
+julia> dimension(d)
+Time
+
+julia> print(mech_units)
+Symbol[:nm, :μm, :μm, :mm, :cm, :dm, :m, :km, :Mm, :Gm, :Tm, :Pm, 
+:ns, :μs, :μs, :ms, :s, :mg, :cg, :kg, :rad, :°, :K, :Ra, :minute,
+:d, :atm, :bar, :N, :daN, :kN, :MN, :Pa, :kPa, :MPa, :GPa, :J, :kJ,
+:MJ, :GJ, :°C, :°F, :h, :yr, :l, :dl, :cl, :ml, :g]
 ```
-Base.delete_method(@which foo(0.2))
-Or even better, put 'using MechanicalUnits' in the .julia/config/startup.jl
 
-The exported units can be listed:
-```varinfo(MechanicalUnits)```
-
-You may get warning messages when also loading other packages. If that happens, switch to importing just what you need
+You may get warning messages like the above when also loading other packages. If that happens, switch to importing just what you need:
 ```import MechanicalUnits: N, kg, m, s, MPa```
 
 
-## Goals
-This adaption of [Unitful.jl](https://github.com/PainterQubits/Unitful.jl) aims to make Julia a preferable tool for quick side calculations in an office computer with very limited user permissions.
+## Goals (11/19 reached)
+This adaption of [Unitful.jl](https://github.com/PainterQubits/Unitful.jl) aims to be a preferable tool for quick side calculations in an office computer with limited user permissions.
 
 This means:
-* We adapt to the limitations of Windows Powershell, Julia REPL or VSCode.
-* We import and reexport a handpicked set of units commonly encountered by mechanical engineers
-* Four significant digits output for floating numbers, no trailing zeros. Don't round when that would display zeros to the left of decimal point: `(991mm)^2` -> `983_322mm²`
+* We adapt to the limitations of Windows Powershell, Julia REPL or VSCode. Substitute symbols which can't be displayed: `𝐓 -> Time`, `𝐋 -> Length`, `𝐌 -> Mass`
+* Units have color, which are sort of tweakable: `show(IOContext(stderr, :unitsymbolcolor=>:bold), 1minute)`
+* We pick a set of units as commonly used in mechanical industry
 * `h` is an hour, not Planck's constant
 * `in` is reserved by Julia; `inch` is a unit
 * `g` is gravity's acceleration, not a gramme
+* Prefer `mm` and `MPa`
 * REPL output can always be parsed as input. We define the bullet operator `∙` (U+2219, \vysmblkcircle + tab) and print e.g. `2.32m∙s^-1`
 * Export dimensions to get short type signatures:
 ```julia
 julia> 1m |> typeof
 Quantity{Int64,Length,FreeUnits{(m,),Length,nothing}}
-``` 
-* Prefer length prefixes `μ` and `mm` by default
-* Prefer force and moment prefix `k`
-* Prefer `MPa`over `N/m²`
-* Thousands separator is supported, but limited to an acceptable format for Julia input: ```983_322N∙m```
-* Array output moves the units outside: `[0.900mm, 9832inches]` -> `[0.9, 239_912]mm`
-* Substitute symbols which can't be displayed in Windows terminals: `𝐓 -> Time`, `𝐋 -> Length`, `𝐌 -> Mass`
-* We would like to support unitful complex numbers, as they often appear while solving equations.
-* We would like to have supporting plot recipes, but in a separate package.
+```
+* Units are never plural
+* Array output moves the units outside or to the header:
+```julia
+julia> dist = [900mm, 1.1m]
+2-element Array{Float64{mm},1}:
+  900.0
+ 1100.0
+
+julia> print(dist)
+[900.0, 1100.0]mm
+```
+
+* We would like to:
+  * tweak dimension sorting to customary order, thus: `m∙N -> N∙m`
+  * support rounding and customary engineering number formatting, but in a separate package.
+  * support unitful complex numbers, as they often appear while solving equations.
+  * have supporting plot recipes, but in a separate package.
+  * support division in a similar way as multiplication, thus: `[1,2]m/s` should work as input.
+  * return, instead of an error: `10m |>s -> 10m∙s^-1∙s` 
+  * support colorful units with Atom's mime type
+  * register the package and have full code coverage
+
 
 ## Alternatives
+
 
 [Unitful.jl](https://github.com/PainterQubits/Unitful.jl) lists similar adaptions for other fields.
 
@@ -84,13 +152,13 @@ Quantity{Int64,Length,FreeUnits{(m,),Length,nothing}}
 
 - Open an [issue](https://github.com/hustf/MechanicalUnits/issues/new) and let's make this better together!
 
-- *Bug reports, feature requests, patches, and well-wishes are always welcome.* :heavy_exclamation_mark:
+- *Bug reports, feature requests, patches, and well-wishes are always welcome.* 
 
 ## FAQ
 
 - ***Is this for real?***
 
-Yes. Unlike complex numbers. This is not so far for complex numbers.
+Yes. Unlike complex numbers. This is not, so far, for complex numbers. What about dual numbers? We have not tested yet.
 
 *What does this cost?*
 

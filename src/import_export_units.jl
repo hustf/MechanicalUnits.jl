@@ -71,17 +71,20 @@ function should_we_use_SI_prefixes(arg::Expr)
 end
 should_we_use_SI_prefixes(arg::Symbol) = false, arg
 # units with standard prefixes
-@import_from_unitful ~m ~s ~g
+@import_from_unitful ~m ~s ~g 
 @import_from_unitful rad ° K Ra
 @import_from_unitful minute d atm bar
 # units with a small set of prefixes
 @import_from_unitful N daN kN MN
+@import_from_unitful Pa kPa MPa GPa
 @import_from_unitful J kJ MJ GJ
-# Affine units
+# strange units
+@import_from_unitful inch ft lb lbf
+# affine units
 @import_affine_from_unitful °C °F
 abbr(::genericunit(°C)) = "°C"
 abbr(::genericunit(°F)) = "°F"
-# own definition(s)
+# preferred capitalization units
 begin
     @unit h      "h"       hour        (3600//1)s false
     push!(mech_units, :h)
@@ -94,6 +97,56 @@ begin
     export yr
     eval(exponents_2_to_4(:yr))
 end
+
+begin
+    @unit l     "l"      liter  (1//1000)m³ false
+    push!(mech_units, :l)
+    export l
+    eval(exponents_2_to_4(:l))
+end
+
+begin
+    @unit dl     "dl"      DesiLiter  (1//10000)m³ false
+    push!(mech_units, :dl)
+    export dl
+    eval(exponents_2_to_4(:dl))
+end
+
+begin
+    @unit cl     "cl"      CentiLiter  (1//100000)m³ false
+    push!(mech_units, :cl)
+    export cl
+    eval(exponents_2_to_4(:cl))
+end
+
+begin
+    @unit ml     "ml"      MilliLiter  (1//1000000)m³ false
+    push!(mech_units, :ml)
+    export ml
+    eval(exponents_2_to_4(:ml))
+end
+
+begin
+    @unit g     "g"      "StandardGravity"  9.80665m/s² false
+    push!(mech_units, :g)
+    export g
+    eval(exponents_2_to_4(:g))
+end
+# more strange units
+begin
+    @unit kip     "kip"      "KiloPoundForce"  1000lbf false
+    push!(mech_units, :kip)
+    export kip
+    eval(exponents_2_to_4(:kip))
+end
+
+begin
+    @unit shton     "shton"      "ShortTon"  2000lb false
+    push!(mech_units, :shton)
+    export shton
+    eval(exponents_2_to_4(:shton))
+end
+
 for u in mech_units
     print(u, "\t")
 end

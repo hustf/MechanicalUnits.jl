@@ -1,7 +1,8 @@
 module MechanicalUnits
 export ∙
 # Convenience / info / testing
-export @u_str, uconvert, upreferred, ustrip, unit, preferunits, dimension, numtype
+export @import_from_unitful
+export uconvert, upreferred, ustrip, unit, preferunits, dimension, numtype
 export mech_units
 # To shorten type signature ouput
 export FreeUnits, Affine, AffineUnits, AffineQuantity, Unitlike, Unit, Quantity, Dimensions, Dimension
