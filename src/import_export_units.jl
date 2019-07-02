@@ -186,14 +186,37 @@ Unitful.promote_unit(::S, ::T) where
 Unitful.promote_unit(::S, ::T) where
 {S<:PressureFreeUnits, T<:PressureFreeUnits} = MPa
 
-
+#= example
+[10000000N*mm 1000.0J]
+1×2 Array{Float64{kNm},2}:
+ 10.0  1.0
+=#
 Unitful.promote_unit(::S, ::T) where
-{S<:EnergyFreeUnits, T<:EnergyFreeUnits} = kN∙m
+{S<:EnergyFreeUnits, T<:EnergyFreeUnits} = kNm
+
+#= example
+[1.0kg/mm³ 2kg/m/m/m]
+
+1×2 Array{Float64{cm²},2}:
+ 1000.0  100.0
+=#
+Unitful.promote_unit(::S, ::T) where
+{S<:AreaFreeUnits, T<:AreaFreeUnits} = cm²
 
 
-# In order to avoid ambiguities, we don't define preferred promotions for e.g. Volume, which is indistinguishable 
-# from moment of resistance.
-# Moment is ambiguous with Energy.
+#= example
+ [1.0mg/mm³ 2kg/m/m/m]
+1×2 Array{Float64{kg∙m^-3},2}:
+ 1000.0  2.0
+=#
+Unitful.promote_unit(::S, ::T) where
+{S<:DensityFreeUnits, T<:DensityFreeUnits} = kg/m³
 
+#= example
+[1/12*100mm*40mm^3/50mm 1l]
+1×2 Array{Float64{cm³},2}:
+ 0.00666667  1000.0
+=#
+Unitful.promote_unit(::S, ::T) where
+{S<:VolumeFreeUnits, T<:VolumeFreeUnits} = cm³
 
-println()

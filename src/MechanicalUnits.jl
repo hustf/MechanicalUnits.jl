@@ -17,7 +17,7 @@ import Unitful: promote_unit, preferunits, dimension, numtype
 import Unitful: @derived_dimension
 import Unitful: Area, Acceleration, Force, Pressure, Density
 import Unitful: Velocity
-import Unitful:ForceFreeUnits, PressureFreeUnits, EnergyFreeUnits
+import Unitful:ForceFreeUnits, PressureFreeUnits, EnergyFreeUnits, AreaFreeUnits, DensityFreeUnits, VolumeFreeUnits
 export Area, Acceleration, Force, Pressure, Density, Velocity
 
 # Are there possible ambiguities with this operation? See Unitful issue #225.
