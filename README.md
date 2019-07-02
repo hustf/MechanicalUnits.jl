@@ -33,13 +33,24 @@ The benefits?
 | Mass    |   mg cg kg lb shton    | 
 | Temperature    |   K Ra °C °F    | 
 | Angles    |   rad °     | 
-| Force    |   N daN kN MN  lbf kip    | 
+| Force    |   N daN kN MN GN lbf kip    | 
 | Pressure    |   Pa kPa MPa GPa atm bar     | 
-| Energy    |   J kJ MJ GJ    | 
+| Energy  |   J kJ MJ GJ | 
+| Moment  |   Nm daNm kNm MNm GNm   | 
 | Volume    |   l dl cl ml      | 
 | Acceleration     |   g    | 
 
+## Derived dimensions
+These are mostly useful for dispatching. We avoid defining common and ambigious derived dimensions; e.g. is Length³ most commonly a volume or a first area moment?
 
+| Derived dimension | Dimension | 
+| ------------- | ------------- |
+| Area     | Length²|
+| Velocity     | Length / Time|
+| Acceleration     | Length / Time²|
+| Force     | Length ∙ Mass / Time² |
+| Pressure  | Mass / (Time² ∙ Length ) |
+| Density  | Mass / Length³ |
 
 ## Usage
 ```

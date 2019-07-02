@@ -16,4 +16,3 @@ function show(io::IO, mime::MIME"text/plain", x::AbstractArray{Quantity{T,D,U}, 
     # Now call the method which would normally have been called if we didn't slightly interfere here. 
     invoke(show, Tuple{IO, MIME{Symbol("text/plain")}, AbstractArray}, ioc, mime, x)
 end
-# Todo dictionaries?

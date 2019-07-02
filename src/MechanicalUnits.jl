@@ -10,11 +10,21 @@ export FreeUnits, Affine, AffineUnits, AffineQuantity, Unitlike, Unit, Quantity,
 import Base:show
 using InteractiveUtils
 using Unitful
-import Unitful: FreeUnits, AffineUnits, Affine, AffineQuantity, Unitlike, Unit, Quantity, Dimension, Dimensions
+import Unitful: FreeUnits, AffineUnits, Affine, AffineQuantity, Unitlike, Unit, Quantity, Dimension, Dimensions, Units
 import Unitful: isunitless, unit, sortexp, showrep, abbr, prefix, power, superscript, tens, numtype, genericunit
 import Unitful: promote_unit, preferunits, dimension, numtype
-# temporary imports
-import Unitful: Units
+# derived dimensions
+import Unitful: @derived_dimension
+import Unitful: Area, Acceleration, Force, Pressure, Density
+import Unitful: Velocity
+import Unitful:ForceFreeUnits, PressureFreeUnits, EnergyFreeUnits
+export Area, Acceleration, Force, Pressure, Density, Velocity
+
+# Are there possible ambiguities with this operation? See Unitful issue #225.
+# If so, it seems important enough to consider including anyway, since
+# useablity is important here. It was allowed in e.g. SIUnits.jl. 
+import Base./
+/(A::AbstractArray, B::Units) = broadcast(/, A, B)
 
 
 # Used for registering units with Unitful macros during initialisation.
