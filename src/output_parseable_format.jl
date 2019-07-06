@@ -1,5 +1,5 @@
 import Base:show
-using InteractiveUtils
+
 
 """
 MechanicalUnits defines the bullet operator `∙` (Unicode U+2219, \vysmblkcircle + tab in Julia). 

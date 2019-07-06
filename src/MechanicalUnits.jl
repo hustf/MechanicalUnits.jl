@@ -8,7 +8,8 @@ export mech_units
 export FreeUnits, Affine, AffineUnits, AffineQuantity, Unitlike, Unit, Quantity, Dimensions, Dimension
 # Units are exported in 'import_export_units.jl' and also 'exponents_2_to_4.jl'
 import Base:show
-using InteractiveUtils
+using Revise
+#using InteractiveUtils
 using Unitful
 import Unitful: FreeUnits, AffineUnits, Affine, AffineQuantity, Unitlike, Unit, Quantity, Dimension, Dimensions, Units
 import Unitful: isunitless, unit, sortexp, showrep, abbr, prefix, power, superscript, tens, numtype, genericunit
@@ -35,6 +36,7 @@ include("import_export_units.jl")
 include("dimensions_for_windows.jl")
 include("output_parseable_format.jl")
 include("output_abstractarrays.jl")
+
 
 function __init__()
     # This is for evaluating Unitful macros in the context of this package.
