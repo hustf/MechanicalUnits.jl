@@ -2,6 +2,7 @@
 # in windows terminals.
 # Where methods are redefined in this package, the translated inline docs are defined in-place.
 # TODO get rid of the original inline docs, which are tied to specific methods (in some cases)
+# TODO moved this to the forked Unitful version.
 #=
 @u_str
 ustrip

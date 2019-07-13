@@ -3,6 +3,7 @@ using Test
 shortp(x) = repr(x, context = :color=>true)
 longp(x) = repr(:"text/plain", x, context = :color=>true)
 global const sInt = typeof(Int(1)) == Int64 ? "Int64" : "Int32"
+
 @testset "Most basic" begin
     testunits = [m ,  s ,  kg ]
     teststrings = ["m" ,  "s" ,  "kg" ]
@@ -65,57 +66,31 @@ end
 @testset "Constructors from type signatures" begin
     buf =IOBuffer()
     print(IOContext(buf, :showconstructor => true), 1m)
-    @test String(take!(buf)) == "1Unit{:Meter,Length}(0, 1//1)"
+    @test String(take!(buf)) == "1Unit{:Meter, ᴸ}(0, 1//1)"
     print(buf, 1m)
     @test String(take!(buf)) == "1m"
-    @test shortp(typeof(1kg∙K∙m/s)) == "Quantity{$(sInt),Length*Mass*Temperature*Time^-1,FreeUnits{(Unit{:Gram,Mass}" *
-                                    "(3, 1//1), Unit{:Kelvin,Temperature}(0, 1//1), " *
-                                    "Unit{:Meter,Length}(0, 1//1), Unit{:Second,Time}(0, -1//1))," *
-                                    "Length*Mass*Temperature*Time^-1,nothing}}"
-    q1 = Quantity{Int, Length, FreeUnits{(Unit{:Meter, Length}(0,1),), Length, nothing}}(2)
+    @test shortp(typeof(1kg∙K∙m/s)) == "Quantity{$(sInt), ᴸ∙ ᴹ∙ ᶿ∙ ᵀ^-1,FreeUnits{(Unit{:Gram, ᴹ}" *
+                                    "(3, 1//1), Unit{:Kelvin, ᶿ}(0, 1//1), " *
+                                    "Unit{:Meter, ᴸ}(0, 1//1), Unit{:Second, ᵀ}(0, -1//1))," *
+                                    " ᴸ∙ ᴹ∙ ᶿ∙ ᵀ^-1,nothing}}"
+    q1 = Quantity{Int,  ᴸ, FreeUnits{(Unit{:Meter,  ᴸ}(0,1),),  ᴸ, nothing}}(2)
     q2 = 2m
     @test q1 == q2
     @test q1 === q2
     strcon = repr(:"text/plain", typeof(q2), context = :color=>false)
     tq1 = typeof(q1)
-    @test strcon == "Quantity{$(sInt),Length,FreeUnits{(Unit{:Meter,Length}(0, 1//1),),Length,nothing}}"
+    @test strcon == "Quantity{$(sInt), ᴸ,FreeUnits{(Unit{:Meter, ᴸ}(0, 1//1),), ᴸ,nothing}}"
     sy = Meta.parse(strcon)
     ex = :($sy(2))
     q3 = eval(ex)
     @test q1 == q3
     @test q1 === q3
 end
-
-
-@testset "Constructors from type signatures, temperature" begin
-    buf =IOBuffer()
-    print(IOContext(buf, :showconstructor => true), 1°C)
-    @test String(take!(buf)) == "1FreeUnits{(Unit{:Kelvin,Temperature}(0, 1//1),),Temperature,Affine{-5463//20}}"
-    print(buf, 1°C)
-    @test String(take!(buf)) == "1°C"
-    @test shortp(typeof(1kg∙K∙m/s)) == "Quantity{$(sInt),Length*Mass*Temperature*Time^-1,FreeUnits{(Unit{:Gram,Mass}" *
-                                    "(3, 1//1), Unit{:Kelvin,Temperature}(0, 1//1), " *
-                                    "Unit{:Meter,Length}(0, 1//1), Unit{:Second,Time}(0, -1//1))," *
-                                    "Length*Mass*Temperature*Time^-1,nothing}}"
-    q1 = Quantity{Int, Temperature, FreeUnits{(Unit{:Kelvin, Temperature}(0,1),), Temperature, Affine{-5463//20}}}(2)
-    q2 = 2°C
-    @test q1 == q2
-    @test q1 === q2
-    strcon = repr(:"text/plain", typeof(q2), context = :color=>false)
-    tq1 = typeof(q1)
-    @test strcon == "Quantity{$(sInt),Temperature,FreeUnits{(Unit{:Kelvin,Temperature}(0, 1//1),),Temperature,Affine{-5463//20}}}"
-    sy = Meta.parse(strcon)
-    ex = :($sy(2))
-    q3 = eval(ex)
-    @test q1 == q3
-    @test q1 === q3
-end
-
 
 @testset "Type signatures, dimensions 1 to 4" begin
-    dimdi = Dict([m => "Length", s => "Time", kg => "Mass",
-            Ra => "Temperature", K => "Temperature", h => "Time",
-            μm => "Length", minute => "Time"])
+    dimdi = Dict([m => " ᴸ", s => " ᵀ", kg => " ᴹ",
+            Ra => " ᶿ", K => " ᶿ", h => " ᵀ",
+            μm => " ᴸ", minute => " ᵀ"])
     expdidi = Dict(["²" => "^2", "³" => "^3", "⁴" => "^4"])
     for bu in ["m", "s", "kg", "Ra", "K", "h", "μm", "minute"], di in ["²", "³", "⁴"]
         res = shortp(typeof(eval(Symbol(bu*di))))
@@ -139,9 +114,10 @@ end
     @test longp(2a2) == st
 end
 
+
 # TODO test chosen color for units
 #@testset "Pick color for units" begin
 #1m∙5N
 #repr(1m, context = :color=>true, :unitsymbolcolor => :blue)
 #end
-# Add division by units for matrices, based on *(A::AbstractArray, B::Unitful.Units) in Unitful at C:\Users\F\.julia\packages\Unitful\W0mMi\src\quantities.jl:36
+# Test division by units for matrices
