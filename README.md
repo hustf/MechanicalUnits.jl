@@ -13,7 +13,7 @@
 
 
 ### Low-effort calculator with units in the REPL
-Units should be part of the quick side calculations mechanical and other engineers do every few minutes of a work day. But we need quick, nice and easy. That's the aim of this package, built on [Unitful.jl](https://github.com/PainterQubits/Unitful.jl).
+Units can be part of the side calculations mechanical and other engineers do every few minutes of a work day. Using units must be quick, nice and easy. That's the aim of this package, built on [Unitful.jl](https://github.com/PainterQubits/Unitful.jl).
 
 The benefits?
 * Fewer mistakes
@@ -26,31 +26,31 @@ The benefits?
 
 
 ## Units
-| Dimension | Symbol | Unit |
+| Units | (Derived) dimension | Dimensions |
 | ------------- | ------------- | ------------- |
-| Length     |  |  nm μm μm mm cm dm m km Mm Gm Tm Pm inch ft    | 
-| Time    |  |  ns μs μs ms s minute d h yr    | 
-| Mass    |  |  mg cg kg lb shton    | 
-| Temperature    |  |  K Ra °C °F    | 
-| Angles    | |   rad °     | 
-| Force    |  |  N daN kN MN GN lbf kip    | 
-| Pressure    |  |  Pa kPa MPa GPa atm bar     | 
-| Energy  |  |  J kJ MJ GJ | 
-| Moment  |  |  Nm daNm kNm MNm GNm   | 
-| Volume    |   |  l dl cl ml      | 
-| Acceleration     |  |  g    | 
+| nm μm μm mm cm dm m km Mm Gm Tm Pm inch ft    | Length       | ᴸ |
+| ns μs μs ms s minute d h yr                   | Time         | ᵀ |  
+| mg cg kg lb shton                             | Mass         | ᴹ |
+| K Ra °C °F                                    | Temperature  | ᶿ |
+| Angles                                        | NoDims        | rad ° | 
+| N daN kN MN GN lbf kip                        | Force        | ᴸ∙ ᴹ ∙ ᵀ⁻² |
+| Pa kPa MPa GPa atm bar                        | Pressure      | ᴹ ∙ ᴸ⁻¹ ∙ ᵀ⁻² |
+| J kJ MJ GJ                                    | Energy        | ᴸ² ∙ ᴹ ∙ ᵀ⁻² | 
+| Nm daNm kNm MNm GNm                           | Moment        | ᴸ² ∙ ᴹ ∙ ᵀ⁻² | 
+| l dl cl ml                                    | Volume        | ᴸ³ | 
+| g                                             | Acceleration  | ᴸ ∙ ᵀ⁻² | 
 
 ## Derived dimensions
-These are mostly useful for dispatching. We avoid defining common and ambigious derived dimensions; e.g. is Length³ most commonly a volume or a first area moment?
+These are mostly useful for dispatching. We avoid defining common and ambigious derived dimensions. For example, the derived dimension for Length³ = ᴸ³ could be a volume, or just as usefully a first area moment.
 
-| Derived dimension | Dimension | 
+| Derived dimension | Dimensions | 
 | ------------- | ------------- |
-| Area     | Length²|
-| Velocity     | Length / Time|
-| Acceleration     | Length / Time²|
-| Force     | Length ∙ Mass / Time² |
-| Pressure  | Mass / (Time² ∙ Length ) |
-| Density  | Mass / Length³ |
+| Area         | ᴸ²            |
+| Velocity     | ᴸ / ᵀ         |
+| Acceleration | ᴸ / ᵀ²        |
+| Force        | ᴸ ∙ ᴹ / ᵀ²    |
+| Pressure     | ᴹ / (ᵀ² ∙ ᴸ ) |
+| Density      | ᴹ / ᴸ³        |
 
 ## Usage
 ```
@@ -137,11 +137,23 @@ Stacktrace:
 julia> dimension(d)
 Time
 
-julia> @import_from_unitful G
+julia> @import_expand ~V ~W ~A  
 
 julia> sqrt(1G²)
 6.67408e-11m³∙kg^-1∙s^-2
+
+julia> [1V*12.0A 2J/s 1kg*g*1m/2s] .|> W
+1×3 Array{Float64{W},2}:
+ 12.0  2.0  4.90332
+
 ```
+
+Tip:
+- use dimension(ans)
+
+    
+
+# ~: Also import SI prefixes like mV, kW
 
 You may get warning messages when also loading other packages. If that happens, switch from `using MechanicalUnits`to just what you need:
 ```julia

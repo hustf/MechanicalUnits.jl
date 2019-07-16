@@ -1,5 +1,6 @@
 using MechanicalUnits
 using Test
+
 shortp(x) = repr(x, context = :color=>true)
 longp(x) = repr(:"text/plain", x, context = :color=>true)
 global const sInt = typeof(Int(1)) == Int64 ? "Int64" : "Int32"
@@ -62,17 +63,20 @@ end
     @test shortp(2q1 * 3q2) == res
 end
 
-
+@testset "Rational quantities" begin
+    shortp((1//100)kg) == "(1//100)\e[36mkg\e[39m"
+    longp((1//100)kg) == "(1//100)\e[36mkg\e[39m"
+end
 @testset "Constructors from type signatures" begin
     buf =IOBuffer()
     print(IOContext(buf, :showconstructor => true), 1m)
     @test String(take!(buf)) == "1Unit{:Meter, ᴸ}(0, 1//1)"
     print(buf, 1m)
     @test String(take!(buf)) == "1m"
-    @test shortp(typeof(1kg∙K∙m/s)) == "Quantity{$(sInt), ᴸ∙ ᴹ∙ ᶿ∙ ᵀ^-1,FreeUnits{(Unit{:Gram, ᴹ}" *
+    @test shortp(typeof(1kg∙K∙m/s)) == "Quantity{$(sInt), ᴸ∙ ᴹ∙ ᶿ∙ ᵀ⁻¹,FreeUnits{(Unit{:Gram, ᴹ}" *
                                     "(3, 1//1), Unit{:Kelvin, ᶿ}(0, 1//1), " *
                                     "Unit{:Meter, ᴸ}(0, 1//1), Unit{:Second, ᵀ}(0, -1//1))," *
-                                    " ᴸ∙ ᴹ∙ ᶿ∙ ᵀ^-1,nothing}}"
+                                    " ᴸ∙ ᴹ∙ ᶿ∙ ᵀ⁻¹,nothing}}"
     q1 = Quantity{Int,  ᴸ, FreeUnits{(Unit{:Meter,  ᴸ}(0,1),),  ᴸ, nothing}}(2)
     q2 = 2m
     @test q1 == q2
@@ -87,16 +91,18 @@ end
     @test q1 === q3
 end
 
-@testset "Type signatures, dimensions 1 to 4" begin
+@testset "Type signatures, exponents -4 to 4" begin
     dimdi = Dict([m => " ᴸ", s => " ᵀ", kg => " ᴹ",
             Ra => " ᶿ", K => " ᶿ", h => " ᵀ",
             μm => " ᴸ", minute => " ᵀ"])
-    expdidi = Dict(["²" => "^2", "³" => "^3", "⁴" => "^4"])
-    for bu in ["m", "s", "kg", "Ra", "K", "h", "μm", "minute"], di in ["²", "³", "⁴"]
+    #expdidi = Dict(["⁻⁴" => "^-4", "⁻³" => "^-3", "⁻²" => "^-2", "⁻¹" => "^-1",
+    #           "²" => "^2", "³" => "^3", "⁴" => "^4"])
+    for bu in ["m", "s", "kg", "Ra", "K", "h", "μm", "minute"],
+        di in ["⁻⁴" , "⁻³", "⁻²" , "⁻¹", "²", "³", "⁴"]
         res = shortp(typeof(eval(Symbol(bu*di))))
         expec1 = "FreeUnits{(\e[36m" * bu * di* "\e[39m,),"
         expec2 = dimdi[eval(Meta.parse(bu)) ]
-        expec3 =  expdidi[di] * ",nothing}"
+        expec3 =  di * ",nothing}"
         @test res == expec1*expec2*expec3
     end
 end
@@ -108,12 +114,27 @@ end
     st = "1×2 Array{$(sInt){\e[36mm\e[39m},2}:\n 2  4"
     @test longp(2a1) == st
     a2 = [1 2]m*s^-1
-    st = "[2 4]\e[36mm\e[39m∙\e[36ms^-1\e[39m"
+    st = "[2 4]\e[36mm\e[39m∙\e[36ms⁻¹\e[39m"
     @test shortp(2a2) == st
-    st = "1×2 Array{$(sInt){\e[36mm\e[39m∙\e[36ms^-1\e[39m},2}:\n 2  4"
+    st = "1×2 Array{$(sInt){\e[36mm\e[39m∙\e[36ms⁻¹\e[39m},2}:\n 2  4"
     @test longp(2a2) == st
 end
 
+@testset "Dimensions" begin
+    u  = s*m*kg*K
+    @test shortp(u) == "\e[36mkg\e[39m∙\e[36mK\e[39m∙\e[36mm\e[39m∙\e[36ms\e[39m"
+    @test shortp(dimension(u)) == " ᴸ∙ ᴹ∙ ᶿ∙ ᵀ"
+    @test shortp(typeof(u)) == "FreeUnits{(\e[36mkg\e[39m, \e[36mK\e[39m, \e[36mm\e[39m, \e[36ms\e[39m), ᴸ∙ ᴹ∙ ᶿ∙ ᵀ,nothing}"
+    @test shortp(typeof(dimension(u))) == "Dimensions{(Dimension{:Length}(1//1), Dimension{:Mass}(1//1), Dimension{:Temperature}(1//1), Dimension{:Time}(1//1))}"
+    @test shortp(dimension(u^2)) == " ᴸ²∙ ᴹ²∙ ᶿ²∙ ᵀ²"
+    @import_expand A mol
+    v  = A * mol
+    @test shortp(v) == "\e[36mA\e[39m∙\e[36mmol\e[39m"
+    @test shortp(dimension(v)) == " ᴺ∙ ᴵ"
+    @test shortp(typeof(v)) == "FreeUnits{(\e[36mA\e[39m, \e[36mmol\e[39m), ᴺ∙ ᴵ,nothing}"
+    @test shortp(typeof(dimension(v))) == "Dimensions{(Dimension{:Amount}(1//1), Dimension{:Current}(1//1))}"
+    @test shortp(dimension(v^2)) == " ᴺ²∙ ᴵ²"
+end
 
 # TODO test chosen color for units
 #@testset "Pick color for units" begin

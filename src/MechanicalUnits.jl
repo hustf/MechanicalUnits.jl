@@ -1,59 +1,53 @@
 module MechanicalUnits
+using Unitful
+# Exported infix function / operator
 export ∙
-# Import / exports for shorter type signatures
+# Import / exports for short and parseable type signatures
 import Unitful: Time, Length, Mass, Temperature, Current, Luminosity, Amount
 import Unitful: ᵀ , ᴸ , ᴹ , ᶿ, ᴶ , ᴺ
-export Time, Length, Mass, Temperature, Current, Luminosity, Amount
+export Time, Length, Mass, Temperature, Current, Luminosity, Amount, Level
 export ᵀ , ᴸ , ᴹ , ᶿ , ᴶ , ᴺ
-export FreeUnits, Affine, AffineUnits, AffineQuantity, Unitlike, Unit, Quantity, Dimensions, Dimension
-# Convenience / info / testing
-export @import_from_unitful
-export uconvert, upreferred, ustrip, unit, preferunits, dimension, numtype
+export Quantity, DimensionlessQuantity, NoUnits, NoDims
+import Unitful:
+        FreeUnits, AffineUnits, Affine, AffineQuantity, Unitlike, Unit, Dimension, Dimensions, Units
+export  FreeUnits, AffineUnits, Affine, AffineQuantity, Unitlike, Unit, Dimensions, Dimension, Units
+export  Level, Gain
+
+# For importinng from Unitful, or defining more units
+export @import_expand, @unit, @u_str
+
+# Reexported functions from Unitful
+export logunit, unit, absoluteunit, dimension, uconvert, ustrip, upreferred, ∙
+export uconvertp, uconvertrp, reflevel, linear
+
+# Useful functions that are not exported by Unitful.
+export preferunits, convfact
+
+# A vector of all the exported units. This is printed during precompilation.
 export mech_units
-# Units are exported in 'import_export_units.jl' and also 'exponents_2_to_4.jl'
-using Unitful
-import Unitful: FreeUnits, AffineUnits, Affine, AffineQuantity, Unitlike, Unit, Quantity, Dimension, Dimensions, Units
-import Unitful: isunitless, unit, sortexp, showrep, abbr, prefix, power, superscript, tens, numtype, genericunit
-import Unitful: promote_unit, preferunits, dimension, numtype
+
+import Unitful: isunitless, sortexp, showrep, abbr, prefix, power, superscript, tens, genericunit
+import Unitful: promote_unit, preferunits, convfact
 # derived dimensions
-import Unitful: @derived_dimension
 import Unitful: Area, Acceleration, Force, Pressure, Density
 import Unitful: Velocity
 import Unitful:ForceFreeUnits, PressureFreeUnits, EnergyFreeUnits, AreaFreeUnits, DensityFreeUnits, VolumeFreeUnits
 export Area, Acceleration, Force, Pressure, Density, Velocity
-# For adding division
-import Base./
+# Units are exported in 'import_export_units.jl'.
 
-# TODO cleanup imports after show methods have been moved out.
+include("internal_functions.jl")
+include("import_export_units.jl")
+# We have defined and exported e.g. m². Now do the same for dimension symbbols,
+# so that e.g.  ᵀ² == ᵀ ^². This way, output could be used as constructors.
+eval(exponents_superscripts(:ᵀ))
+eval(exponents_superscripts(:ᴸ))
+eval(exponents_superscripts(:ᴹ))
+eval(exponents_superscripts(:ᶿ))
+eval(exponents_superscripts(:ᴶ))
+eval(exponents_superscripts(:ᴺ))
 
 # Used for registering units with Unitful macros during initialisation.
 const localunits = Unitful.basefactors
-include("exponents_2_to_4.jl")
-include("import_export_units.jl")
-
-"""
-MechanicalUnits defines the bullet operator `∙` (Unicode U+2219, \vysmblkcircle + tab in Julia).
-
-The intention of defining it is being able to copy unitful output in the REPL without
-having to print units with the `*` symbol.
-
-A modified version of Unitful is used, where this operator is used for printing.
-"""
-∙(a, b) = *(a,b)
-
-
-
-"""
-Are there possible ambiguities with this operation? See Unitful issue #225.
-If so, it seems important enough to consider including anyway, since
-useablity is important here. It was allowed in e.g. SIUnits.jl.
-"""
-/(A::AbstractArray, B::Units) = broadcast(/, A, B)
-
-
-
-
-# TODO consider printing units to a buffer during precompilation, check speed.
 
 function __init__()
     # This is for evaluating Unitful macros in the context of this package.
@@ -63,6 +57,5 @@ function __init__()
     # This pre-selects some useful units for the mechanical engineering domain
    preferunits(kg, mm, s, K)
 end
-
 
 end # module
