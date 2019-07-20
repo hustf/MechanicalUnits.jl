@@ -23,17 +23,20 @@ const global mech_units = Vector{Symbol}()
 # In order to avoid awkwardness like 'm∙N', we define the product as its own unit.
 # It is used to represent a moment, rather than energy.
 begin
-    @unit Nm     "Nm"       NewtonMeter  (1//1)N*m false
+    @unit Nmm     "Nmm"     NewtonMiliMeter  (1//1000)N*m false
+    @unit Nm     "Nm"       NewtonMeter      (1//1)N*m false
     @unit daNm   "daNm"     dekaNewtonMeter  (10//1)N*m false
     @unit kNm    "kNm"      kiloNewtonMeter  (1000//1)N*m false
     @unit MNm    "MNm"      MegaNewtonMeter  (1000000//1)N*m false
     @unit GNm    "GNm"      GigaNewtonMeter  (1000000000//1)N*m false
+    push!(mech_units, :Nmm)
     push!(mech_units, :Nm)
     push!(mech_units, :daNm)
     push!(mech_units, :kNm)
     push!(mech_units, :MNm)
     push!(mech_units, :GNm)
-    export Nm, daNm, kNm, MNm, GNm
+    export Nmm, Nm, daNm, kNm, MNm, GNm
+    eval(exponents_superscripts(:Nmm))
     eval(exponents_superscripts(:Nm))
     eval(exponents_superscripts(:daNm))
     eval(exponents_superscripts(:kNm))
