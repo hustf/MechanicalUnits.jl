@@ -11,7 +11,7 @@ crash with symbols defined. One way to solve such issues is importing just what 
 import MechanicalUnits: kg, m
 ```
 """
-const global mech_units = Vector{Symbol}()
+const global MECH_UNITS = Vector{Symbol}()
 # units with standard prefixes
 @import_expand ~m ~s ~g
 @import_expand rad ° K Ra
@@ -23,18 +23,18 @@ const global mech_units = Vector{Symbol}()
 # In order to avoid awkwardness like 'm∙N', we define the product as its own unit.
 # It is used to represent a moment, rather than energy.
 begin
-    @unit Nmm     "Nmm"     NewtonMiliMeter  (1//1000)N*m false
+    @unit Nmm     "Nmm"     NewtonMilliMeter  (1//1000)N*m false
     @unit Nm     "Nm"       NewtonMeter      (1//1)N*m false
     @unit daNm   "daNm"     dekaNewtonMeter  (10//1)N*m false
     @unit kNm    "kNm"      kiloNewtonMeter  (1000//1)N*m false
     @unit MNm    "MNm"      MegaNewtonMeter  (1000000//1)N*m false
     @unit GNm    "GNm"      GigaNewtonMeter  (1000000000//1)N*m false
-    push!(mech_units, :Nmm)
-    push!(mech_units, :Nm)
-    push!(mech_units, :daNm)
-    push!(mech_units, :kNm)
-    push!(mech_units, :MNm)
-    push!(mech_units, :GNm)
+    push!(MECH_UNITS, :Nmm)
+    push!(MECH_UNITS, :Nm)
+    push!(MECH_UNITS, :daNm)
+    push!(MECH_UNITS, :kNm)
+    push!(MECH_UNITS, :MNm)
+    push!(MECH_UNITS, :GNm)
     export Nmm, Nm, daNm, kNm, MNm, GNm
     eval(exponents_superscripts(:Nmm))
     eval(exponents_superscripts(:Nm))
@@ -53,67 +53,67 @@ abbr(::genericunit(°F)) = "°F"
 # preferred capitalization units
 begin
     @unit h      "h"       hour        (3600//1)s false
-    push!(mech_units, :h)
+    push!(MECH_UNITS, :h)
     export h
     eval(exponents_superscripts(:h))
 end
 begin
     @unit yr     "yr"      JulianYear  (31557600//1)s false
-    push!(mech_units, :yr)
+    push!(MECH_UNITS, :yr)
     export yr
     eval(exponents_superscripts(:yr))
 end
 
 begin
     @unit l     "l"      liter  (1//1000)m³ false
-    push!(mech_units, :l)
+    push!(MECH_UNITS, :l)
     export l
     eval(exponents_superscripts(:l))
 end
 
 begin
     @unit dl     "dl"      DesiLiter  (1//10000)m³ false
-    push!(mech_units, :dl)
+    push!(MECH_UNITS, :dl)
     export dl
     eval(exponents_superscripts(:dl))
 end
 
 begin
     @unit cl     "cl"      CentiLiter  (1//100000)m³ false
-    push!(mech_units, :cl)
+    push!(MECH_UNITS, :cl)
     export cl
     eval(exponents_superscripts(:cl))
 end
 
 begin
     @unit ml     "ml"      MilliLiter  (1//1000000)m³ false
-    push!(mech_units, :ml)
+    push!(MECH_UNITS, :ml)
     export ml
     eval(exponents_superscripts(:ml))
 end
 
 begin
     @unit g     "g"      "StandardGravity"  9.80665m/s² false
-    push!(mech_units, :g)
+    push!(MECH_UNITS, :g)
     export g
     eval(exponents_superscripts(:g))
 end
 
 begin
     @unit kip     "kip"      "KiloPoundForce"  1000lbf false
-    push!(mech_units, :kip)
+    push!(MECH_UNITS, :kip)
     export kip
     eval(exponents_superscripts(:kip))
 end
 
 begin
     @unit shton     "shton"      "ShortTon"  2000lb false
-    push!(mech_units, :shton)
+    push!(MECH_UNITS, :shton)
     export shton
     eval(exponents_superscripts(:shton))
 end
 
-@show mech_units
+@show MECH_UNITS
 
 
 # Define derived dimensions promotions

@@ -24,7 +24,7 @@ export uconvertp, uconvertrp, reflevel, linear
 export preferunits, convfact
 
 # A vector of all the exported units. This is printed during precompilation.
-export mech_units
+export MECH_UNITS
 
 import Unitful: isunitless, sortexp, showrep, abbr, prefix, power, superscript, tens, genericunit
 import Unitful: promote_unit, preferunits, convfact

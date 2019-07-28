@@ -45,7 +45,7 @@ macro import_expand(args...)
                     push!(expr.args, :(import MechanicalUnits.Unitful.$sym′))
                     # AstroUnits don't reexport, but we do:
                     push!(expr.args, :(export $sym′))
-                    push!(mech_units, sym′)
+                    push!(MECH_UNITS, sym′)
                     push!(expr.args, exponents_superscripts(sym′))
                 end
             end
@@ -53,7 +53,7 @@ macro import_expand(args...)
             push!(expr.args, :(import MechanicalUnits.Unitful.$sym))
             # AstroUnits don't reexport, but we do:
             push!(expr.args, :(export $sym))
-            push!(mech_units, sym)
+            push!(MECH_UNITS, sym)
             push!(expr.args, exponents_superscripts(sym))
         end
     end
@@ -66,7 +66,7 @@ macro import_affine_from_unitful(args...)
         push!(expr.args, :(import MechanicalUnits.Unitful.$arg))
         # AstroUnits don't reexport, but we do:
         push!(expr.args, :(export $arg))
-        push!(mech_units, arg)
+        push!(MECH_UNITS, arg)
     end
     esc(expr)
 end
