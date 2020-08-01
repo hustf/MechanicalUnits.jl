@@ -55,7 +55,9 @@ function __init__()
     # This enables any units defined here to be used in the @u_str
     Unitful.register(MechanicalUnits)
     # This pre-selects some useful units for the mechanical engineering domain
-   preferunits(kg, mm, s, K)
+    preferunits(kg, mm, s, K)
+    Sys.iswindows() && push!(ENV, "UNITFUL_FANCY_EXPONENTS" => "true")
+    Sys.isapple() && push!(ENV, "UNITFUL_FANCY_EXPONENTS" => "true")
 end
 
 end # module

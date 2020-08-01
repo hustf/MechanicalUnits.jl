@@ -12,5 +12,4 @@ using Test
     @test 1000μm * 1m |> m² === (1//1000)m^2
     @test 1.0m² == 1.0m^2
     @test 1.0m² === 1.0m^2
-    (1//1000)m²
 end
