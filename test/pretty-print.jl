@@ -95,12 +95,12 @@ end
     a1 = [1 2]m
     st ="[2 4]\e[36mm\e[39m"
     @test shortp(2a1) == st
-    st = "1×2 Array{Quantity{Int64, ᴸ,FreeUnits{(\e[36mm\e[39m,), ᴸ,nothing}},2}:\n 2  4"
+    st = "1×2 Array{Quantity{" * sInt * ", ᴸ,FreeUnits{(\e[36mm\e[39m,), ᴸ,nothing}},2}:\n 2  4"
     @test longp(2a1) == st
     a2 = [1 2]m*s^-1
     st = "[2 4]\e[36mm\e[39m∙\e[36ms⁻¹\e[39m"
     @test shortp(2a2) == st
-    st = "1×2 Array{Quantity{Int64, ᴸ∙ ᵀ⁻¹,FreeUnits{(\e[36mm\e[39m, \e[36ms⁻¹\e[39m), ᴸ∙ ᵀ⁻¹,nothing}},2}:\n 2  4"
+    st = "1×2 Array{Quantity{" * sInt * ", ᴸ∙ ᵀ⁻¹,FreeUnits{(\e[36mm\e[39m, \e[36ms⁻¹\e[39m), ᴸ∙ ᵀ⁻¹,nothing}},2}:\n 2  4"
 end
 
 @testset "Tuples with units" begin
@@ -111,7 +111,7 @@ end
     a2 = (1, 2)m*s^-1
     st = "(2, 4)\e[36mm\e[39m∙\e[36ms⁻¹\e[39m"
     @test shortp(2 .*a2) == st
-    st = "1×2 Array{Quantity{Int64, ᴸ∙ ᵀ⁻¹,FreeUnits{(\e[36mm\e[39m, \e[36ms⁻¹\e[39m), ᴸ∙ ᵀ⁻¹,nothing}},2}:\n 2  4"
+    st = "1×2 Array{Quantity{" * sInt * ", ᴸ∙ ᵀ⁻¹,FreeUnits{(\e[36mm\e[39m, \e[36ms⁻¹\e[39m), ᴸ∙ ᵀ⁻¹,nothing}},2}:\n 2  4"
 end
 #
 @testset "Dimensions" begin
