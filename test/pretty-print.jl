@@ -79,8 +79,6 @@ end
     dimdi = Dict([m => " ᴸ", s => " ᵀ", kg => " ᴹ",
             Ra => " ᶿ", K => " ᶿ", h => " ᵀ",
             μm => " ᴸ", minute => " ᵀ"])
-    #expdidi = Dict(["⁻⁴" => "^-4", "⁻³" => "^-3", "⁻²" => "^-2", "⁻¹" => "^-1",
-    #           "²" => "^2", "³" => "^3", "⁴" => "^4"])
     for bu in ["m", "s", "kg", "Ra", "K", "h", "μm", "minute"],
         di in ["⁻⁴" , "⁻³", "⁻²" , "⁻¹", "²", "³", "⁴"]
         res = shortp(typeof(eval(Symbol(bu*di))))
@@ -101,6 +99,11 @@ end
     st = "[2 4]\e[36mm\e[39m∙\e[36ms⁻¹\e[39m"
     @test shortp(2a2) == st
     st = "1×2 Array{Quantity{" * sInt * ", ᴸ∙ ᵀ⁻¹,FreeUnits{(\e[36mm\e[39m, \e[36ms⁻¹\e[39m), ᴸ∙ ᵀ⁻¹,nothing}},2}:\n 2  4"
+    a3 = [10, 6, 2, -2]m
+    st = "[20, 12, 4, -4]\e[36mm\e[39m"
+    @test shortp(2a3) == st
+    st = "4-element Array{Quantity{Int64, ᴸ,FreeUnits{(\e[36mm\e[39m,), ᴸ,nothing}},1}:\n 20\n 12\n  4\n -4"
+    @test longp(2a3) == st
 end
 
 @testset "Tuples with units" begin
@@ -111,8 +114,21 @@ end
     a2 = (1, 2)m*s^-1
     st = "(2, 4)\e[36mm\e[39m∙\e[36ms⁻¹\e[39m"
     @test shortp(2 .*a2) == st
-    st = "1×2 Array{Quantity{" * sInt * ", ᴸ∙ ᵀ⁻¹,FreeUnits{(\e[36mm\e[39m, \e[36ms⁻¹\e[39m), ᴸ∙ ᵀ⁻¹,nothing}},2}:\n 2  4"
+    a3 = (10, 6, 2, -2)m
+    st = "(10, 6, 2, -2)\e[36mm\e[39m"
+    @test shortp(a3) == st
 end
+
+@testset "Ranges" begin
+    a1 = 1m:2m:5m
+    st = "(2:4:10)\e[36mm\e[39m"
+    @test shortp(2 .*a1) == st
+    @test longp(2 .*a1) == st
+    a2 = (5:-2:-1)m*s^-1
+    st = "[10, 6, 2, -2]\e[36mm\e[39m∙\e[36ms⁻¹\e[39m"
+    @test shortp(collect(2 .*a2)) == st
+end
+
 #
 @testset "Dimensions" begin
     u  = s*m*kg*K

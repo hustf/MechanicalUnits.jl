@@ -4,6 +4,7 @@
 [![Coveralls](https://coveralls.io/repos/github/hustf/MechanicalUnits.jl/badge.svg?branch=master)](https://coveralls.io/github/hustf/MechanicalUnits.jl?branch=master)
 
   - [Units](#units)
+  - [Dimensions](#dimensions)
   - [Usage](#usage)
   - [Goals](#goals)
   - [Alternatives](#alternatives)
@@ -13,17 +14,21 @@
 
 
 ### Convenient units in the REPL
-Units can be part of the side calculations mechanical and other engineers do every few minutes of a work day. Using units must be quick, nice and easy. That's the aim of this package, built on a slight modification of [Unitful.jl](https://github.com/hustf/Unitful.jl).
+Using units should be quick, nice and easy. That's the aim of this package, built on a slight modification of [Unitful.jl](https://github.com/hustf/Unitful.jl).
 
-The benefits?
+We enhance readability with colors, and we don't throw errors at meaningful input:
+```
+julia> 1kg∙m∙s⁻¹ |> N
+1N∙s
+```
+
+Benefits to using quantities rather than just numbers:
 * Fewer mistakes
 * More pattern recognition
 * Hints to find wrong input
 * Quicker problem solving
 * More ways to understand a problem or read a calculation
-* You could pick plot recipes based on units
-* You could pick table formats based on units
-
+* Functions can dispatch based on input dimensions: You would plot a force vector differently to a position.
 
 ## Units
 | Units | (Derived) dimension | Dimensions |
@@ -40,8 +45,8 @@ The benefits?
 | l dl cl ml                                    | Volume        | ᴸ³ | 
 | g                                             | Acceleration  | ᴸ ∙ ᵀ⁻² | 
 
-## Derived dimensions
-These are mostly useful for dispatching. We avoid defining common and ambigious derived dimensions. For example, the derived dimension for Length³ = ᴸ³ could be a volume, or just as usefully a first area moment.
+## Dimensions
+Dimensions are useful for defining specialized functions, e.g. `plot(F::Force)`. 
 
 | Derived dimension | Dimensions | 
 | ------------- | ------------- |
@@ -52,11 +57,32 @@ These are mostly useful for dispatching. We avoid defining common and ambigious 
 | Pressure     | ᴹ / (ᵀ² ∙ ᴸ ) |
 | Density      | ᴹ / ᴸ³        |
 
+We avoid defining common and ambigious derived dimensions. For example, the derived dimension for Length³ = ᴸ³ could be a volume, or just as usefully a first area moment.
+
 ## Usage
-```
-julia > ]add MechanicalUnits
-```
-Colors won't show here. But let us do some side calculations:
+
+### Installation
+
+To use the correct version of Unitful for this package:
+´´´
+(v1.5) pkg> add https://github.com/hustf/Unitful.jl
+
+(v1.5) pkg> add https://github.com/hustf/MechanicalUnits.jl.git
+´´´
+
+If you get error messages saying that MechanicalUnits can't import packages, you probably had the original Unitful installed already. This may fix that:
+
+´´´
+(v1.5) pkg> rm Unitful
+
+(v1.5) pkg> add https://github.com/hustf/Unitful.jl
+
+´´´
+
+
+### Example REPL workflow
+
+Let us do some side calculations (other examples in that folder):
 ```julia
 julia> using MechanicalUnits
 
@@ -155,59 +181,50 @@ julia> u*1.5A |> J
   266.97560814373264 - 193.9691332565162im
 
 ```
-
-As we encountered above, the global namespace is quite cluttered with units by default. For clarity, import just what you need:
+### Adding or removing units
+If you want fewer globally defined variables, @import_expand just what you need: 
 ```julia
-import MechanicalUnits: N, kg, m, s, MPa
+julia> import MechanicalUnits: @import_expand, ∙
+
+julia> @import_expand ~m     # ~ : also import SI prefixes
+
+julia> (1.0cm², 2.0mm∙m, 3.0dm⁴/m² ) .|> mm²
+(100.0, 2000.0, 300.0)mm²
+
+julia> @import_expand dyn    # This unit is not exported by default
+
+julia> typeof(dyn)
+Unitful.FreeUnits{(dyn,), ᴸ∙ ᴹ∙ ᵀ⁻²,nothing}
+
+julia> 1dyn |> μm
+10kg∙μm∙s⁻²
 ```
 
 ## Goals
-This adaption of [Unitful.jl](https://github.com/PainterQubits/Unitful.jl) aims to be a preferable tool for quick side calculations in an office computer with limited user permissions.
+This adaption of a [fork](https://github.com/hustf/Unitful.jl) of [Unitful.jl](https://github.com/PainterQubits/Unitful.jl) aims to be a tool for quick side calculations in an office computer.
 
 This means:
-* We adapt to the limitations of Windows Powershell, Julia REPL or VSCode. Substitute symbols which can't be displayed.: `𝐓 -> ᵀ`
-* Units have color, which are sort of tweakable: `show(IOContext(stderr, :unitsymbolcolor=>:bold), 1minute)`
 * We pick a set of units as commonly used in mechanical industry
 * `h` is an hour, not Planck's constant
 * `in` is reserved by Julia; `inch` is a unit
 * `g` is gravity's acceleration, not a gramme
 * Prefer `mm` and `MPa`
-* Support division in a similar way as multiplication  , thus: `[1,2]m/s`
-* REPL output can always be parsed as input. We define the bullet operator `∙` (U+2219, \vysmblkcircle + tab) and print e.g. `2.32m∙s⁻¹`
-* Export dimensions to get shorter type signatures:
-```julia
-julia> 1m |> typeof
-Quantity{Int64, ᴸ,FreeUnits{(Unit{:Meter, ᴸ}(0, 1//1),), ᴸ,nothing}
-```
-* Units are never plural
-* Array output moves the units outside or to the header:
+* Non-decorated REPL output can always be parsed as input. We define the bullet operator `∙` (U+2219, \vysmblkcircle + tab) and print e.g. `2.32m∙s⁻¹`
+* Substitute symbols which can't be displayed in Windows without installing CygWin or VSCode. .: `𝐓 -> ᵀ`
+* Units show with color (although not in a text file)
+* Array and tuple output moves common units outside brackets or to the header:
 ```julia
 julia> dist = [900mm, 1.1m]
-2-element Array{Float64{mm},1}:
+2-element Array{Quantity{Float64, ᴸ,FreeUnits{(mm,), ᴸ,nothing}},1}:
   900.0
  1100.0
-
-julia> print(dist)
-[900.0, 1100.0]mm
 ```
-  * support unitful complex numbers
-
-* We would like to:
-  * tweak dimension sorting to customary order, thus: `m∙N -> N∙m`. A good alternative is e.g. 
-  ```julia
-julia> 43N*mm |> Nmm
-(43//1)Nmm
-
-```
-  * support rounding and customary engineering number formatting, but in a separate package.
-  * have supporting plot recipes, but in a separate package.
-  * return, instead of an error: `10m |>s -> 10m∙s^-1∙s` 
-  * support colorful units with Atom's mime type
-  * not rely on a tweaked fork of Unitful, but the original
-  * register the package and have full test coverage
+We would like to:
+* not rely on a tweaked fork of Unitful, but the original
+* register the package and have full test coverage
 
 ## Alternatives
-[Unitful.jl](https://github.com/PainterQubits/Unitful.jl) lists similar adaptions for other fields.
+See [Unitful.jl](https://github.com/PainterQubits/Unitful.jl)
 
 
 ## Am I missing some essential feature?
@@ -215,16 +232,6 @@ julia> 43N*mm |> Nmm
 - Open an [issue](https://github.com/hustf/MechanicalUnits/issues/new) and let's make this better together!
 
 - *Bug reports, feature requests, patches, and well-wishes are always welcome.* 
-
-## FAQ
-
-- ***Is this for real?***
-
-Yes. And for imaginary units as well. What about dual numbers? We have not tested yet.
-
-*What does this cost?*
-
-Your time. It may save some, too.
 
 ## Contributing
 
