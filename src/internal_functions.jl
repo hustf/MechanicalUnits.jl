@@ -29,7 +29,7 @@ end
 # The below macros and functions are based on https://github.com/JuliaAstro/UnitfulAstro.jl/blob/master/src/UnitfulAstro.jl
 
 """
-Import non-affine units from Unitful.
+Import non-affine units from Unitfu.
 Expand to also include exponents -4 to 4.
 """
 macro import_expand(args...)
@@ -42,7 +42,7 @@ macro import_expand(args...)
                 sym′ = Symbol(prefix, sym)
                 # Some prefix+baseunit are excluded:
                 if sym′ ∉ exclude_import
-                    push!(expr.args, :(import MechanicalUnits.Unitful.$sym′))
+                    push!(expr.args, :(import MechanicalUnits.Unitfu.$sym′))
                     # AstroUnits don't reexport, but we do:
                     push!(expr.args, :(export $sym′))
                     push!(MECH_UNITS, sym′)
@@ -50,7 +50,7 @@ macro import_expand(args...)
                 end
             end
         else
-            push!(expr.args, :(import MechanicalUnits.Unitful.$sym))
+            push!(expr.args, :(import MechanicalUnits.Unitfu.$sym))
             # AstroUnits don't reexport, but we do:
             push!(expr.args, :(export $sym))
             push!(MECH_UNITS, sym)
@@ -59,11 +59,11 @@ macro import_expand(args...)
     end
     esc(expr)
 end
-"Import affine units from Unitful."
-macro import_affine_from_unitful(args...)
+"Import affine units from Unitfu."
+macro import_affine_from_Unitfu(args...)
     expr = Expr(:block)
     for arg in args
-        push!(expr.args, :(import MechanicalUnits.Unitful.$arg))
+        push!(expr.args, :(import MechanicalUnits.Unitfu.$arg))
         # AstroUnits don't reexport, but we do:
         push!(expr.args, :(export $arg))
         push!(MECH_UNITS, arg)

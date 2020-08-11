@@ -129,7 +129,7 @@ julia> δ.([5, 6, 8]mm)
  2.7411673364058977
 
 julia> d = 6mm
-ERROR: cannot assign variable Unitful.d from module Main
+ERROR: cannot assign variable Unitfu.d from module Main
 Stacktrace:
  [1] top-level scope at none:0
 
@@ -182,14 +182,14 @@ julia> (1.0cm², 2.0mm∙m, 3.0dm⁴/m² ) .|> mm²
 julia> @import_expand dyn    # This unit is not exported by default
 
 julia> typeof(dyn)
-Unitful.FreeUnits{(dyn,), ᴸ∙ ᴹ∙ ᵀ⁻²,nothing}
+Unitfu.FreeUnits{(dyn,), ᴸ∙ ᴹ∙ ᵀ⁻²,nothing}
 
 julia> 1dyn |> μm
 10kg∙μm∙s⁻²
 ```
 
 ## Goals
-This adaption of a [fork](https://github.com/hustf/Unitful.jl) of [Unitful.jl](https://github.com/PainterQubits/Unitful.jl) aims to be a tool for quick side calculations in an office computer.
+This dependency of a [fork](https://github.com/hustf/Unitfu.jl) of [Unitful.jl](https://github.com/PainterQubits/Unitful.jl) aims to be a tool for quick side calculations in an office computer.
 
 This means:
 * We pick a set of units as commonly used in mechanical industry

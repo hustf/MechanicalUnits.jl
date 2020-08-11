@@ -70,7 +70,7 @@ end
     longp((1//100)kg) == "(1//100)\e[36mkg\e[39m"
 end
 @testset "Constructors from type signatures" begin
-    # Unitful now prints shorter type signatures, which
+    # Unitfu now prints shorter type signatures, which
     # on reconstruction makes FreeUnits instead of the original.
     # The shorter output is more readable.
 end

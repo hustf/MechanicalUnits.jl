@@ -47,7 +47,7 @@ end
 # U.S. units
 @import_expand inch ft lb lbf
 # affine units
-@import_affine_from_unitful °C °F
+@import_affine_from_Unitfu °C °F
 abbr(::genericunit(°C)) = "°C"
 abbr(::genericunit(°F)) = "°F"
 # preferred capitalization units
@@ -123,7 +123,7 @@ end
  100.0  0.1
 =#
 
-Unitful.promote_unit(::S, ::T) where
+Unitfu.promote_unit(::S, ::T) where
 {S<:ForceFreeUnits, T<:ForceFreeUnits} = kN
 
 #= example
@@ -131,7 +131,7 @@ Unitful.promote_unit(::S, ::T) where
 1×2 Array{Rational{Int64}{MPa},2}:
 (10//1)  (100//1)
 =#
-Unitful.promote_unit(::S, ::T) where
+Unitfu.promote_unit(::S, ::T) where
 {S<:PressureFreeUnits, T<:PressureFreeUnits} = MPa
 
 #= example
@@ -139,7 +139,7 @@ Unitful.promote_unit(::S, ::T) where
 1×2 Array{Float64{kNm},2}:
  10.0  1.0
 =#
-Unitful.promote_unit(::S, ::T) where
+Unitfu.promote_unit(::S, ::T) where
 {S<:EnergyFreeUnits, T<:EnergyFreeUnits} = kNm
 
 #= example
@@ -148,7 +148,7 @@ Unitful.promote_unit(::S, ::T) where
 1×2 Array{Float64{cm²},2}:
  1000.0  100.0
 =#
-Unitful.promote_unit(::S, ::T) where
+Unitfu.promote_unit(::S, ::T) where
 {S<:AreaFreeUnits, T<:AreaFreeUnits} = cm²
 
 
@@ -157,7 +157,7 @@ Unitful.promote_unit(::S, ::T) where
 1×2 Array{Float64{kg∙m^-3},2}:
  1000.0  2.0
 =#
-Unitful.promote_unit(::S, ::T) where
+Unitfu.promote_unit(::S, ::T) where
 {S<:DensityFreeUnits, T<:DensityFreeUnits} = kg/m³
 
 #= example
@@ -165,5 +165,5 @@ Unitful.promote_unit(::S, ::T) where
 1×2 Array{Float64{cm³},2}:
  0.00666667  1000.0
 =#
-Unitful.promote_unit(::S, ::T) where
+Unitfu.promote_unit(::S, ::T) where
 {S<:VolumeFreeUnits, T<:VolumeFreeUnits} = cm³
