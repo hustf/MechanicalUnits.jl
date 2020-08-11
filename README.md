@@ -14,7 +14,7 @@
 
 
 ### Convenient units in the REPL
-Using units should be quick, nice and easy. That's the aim of this package, built on a slight modification of [Unitful.jl](https://github.com/hustf/Unitful.jl).
+Using units should be quick, nice and easy. That's the aim of this package, built on a slight [modification](https://github.com/hustf/Unitfu.jl).of [Unitful.jl](https://github.com/PainterQubits/Unitful.jl).
 
 We enhance readability with colors, and we don't throw errors at meaningful input:
 ```
@@ -63,20 +63,8 @@ We avoid defining common and ambigious derived dimensions. For example, the deri
 
 ### Installation
 
-To use the correct version of Unitful for this package:
 ´´´
-(v1.5) pkg> add https://github.com/hustf/Unitful.jl
-
 (v1.5) pkg> add https://github.com/hustf/MechanicalUnits.jl.git
-´´´
-
-If you get error messages saying that MechanicalUnits can't import packages, you probably had the original Unitful installed already. This may fix that:
-
-´´´
-(v1.5) pkg> rm Unitful
-
-(v1.5) pkg> add https://github.com/hustf/Unitful.jl
-
 ´´´
 
 

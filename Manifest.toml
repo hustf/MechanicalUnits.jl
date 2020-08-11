@@ -46,8 +46,8 @@ uuid = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [[Unitful]]
 deps = ["ConstructionBase", "LinearAlgebra", "Random"]
-git-tree-sha1 = "9d9674441ebaa9a23810252c35aa1d446bb7327c"
+git-tree-sha1 = "d045383854a8f2166ace59063e0910590690d910"
 repo-rev = "master"
-repo-url = "https://github.com/hustf/Unitful.jl"
-uuid = "1986cc42-f94f-5a68-af5c-568840ba703d"
+repo-url = "https://github.com/hustf/Unitfu.jl"
+uuid = "5ee08b94-2369-4f4a-b8c7-99333ba35fb0"
 version = "1.3.0"
