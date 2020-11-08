@@ -21,7 +21,7 @@ function tryparse_internal(::Type{Quantity{T}}, sbuff::Union{String,SubString{St
 
     # Find first character of unit specification
     unitpos = startpos
-    while sbuff[unitpos] ∈ "+-0123456789.," && unitpos <= endpos 
+    while sbuff[unitpos] ∈ "Ee+-0123456789.," && unitpos <= endpos 
         unitpos = nextind(sbuff, unitpos)
     end
 
