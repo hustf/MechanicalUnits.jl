@@ -5,6 +5,7 @@ export ∙
 # Import / exports for short and parseable type signatures
 import Unitfu: Time, Length, Mass, Temperature, Current, Luminosity, Amount
 import Unitfu: ᵀ , ᴸ , ᴹ , ᶿ, ᴶ , ᴺ
+import Unitfu: lookup_units
 export Time, Length, Mass, Temperature, Current, Luminosity, Amount, Level
 export ᵀ , ᴸ , ᴹ , ᶿ , ᴶ , ᴺ
 export Quantity, DimensionlessQuantity, NoUnits, NoDims
@@ -13,7 +14,7 @@ import Unitfu:
 export  FreeUnits, AffineUnits, Affine, AffineQuantity, Unitlike, Unit, Dimensions, Dimension, Units
 export  Level, Gain
 
-# For importinng from Unitfu, or defining more units
+# For importing from Unitfu, or defining more units
 export @import_expand, @unit, @u_str
 
 # Reexported functions from Unitfu
@@ -33,6 +34,10 @@ import Unitfu: Area, Acceleration, Force, Pressure, Density
 import Unitfu: Velocity
 import Unitfu:ForceFreeUnits, PressureFreeUnits, EnergyFreeUnits, AreaFreeUnits, DensityFreeUnits, VolumeFreeUnits
 export Area, Acceleration, Force, Pressure, Density, Velocity
+
+# Extend base. This could perhaps reside in Unitfu
+import Base: tryparse_internal, parse
+
 # Units are exported in 'import_export_units.jl'.
 
 include("internal_functions.jl")
@@ -49,6 +54,7 @@ eval(exponents_superscripts(:ᴺ))
 # Used for registering units with Unitfu macros during initialisation.
 const localunits = Unitfu.basefactors
 
+include("parse.jl")
 function __init__()
     # This is for evaluating Unitfu macros in the context of this package.
     merge!(Unitfu.basefactors, localunits)
@@ -59,5 +65,6 @@ function __init__()
     Sys.iswindows() && push!(ENV, "UNITFUL_FANCY_EXPONENTS" => "true")
     Sys.isapple() && push!(ENV, "UNITFUL_FANCY_EXPONENTS" => "true")
 end
+
 
 end # module

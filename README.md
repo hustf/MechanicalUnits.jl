@@ -186,6 +186,24 @@ Unitfu.FreeUnits{(dyn,), ᴸ∙ ᴹ∙ ᵀ⁻²,nothing}
 
 julia> 1dyn |> μm
 10kg∙μm∙s⁻²
+
+julia> # When parsing text file, spaces as multipliers and brackets are allowed. Just specify the numeric type:
+julia> lin = "2 [s]\t11364.56982421875 [N]\t-44553.50244140625 [N]\t-26.586366176605225 [N]\t0.0[N mm]\t0.0[N mm]\t0.0[N mm]\t1561.00350618362 [mm]\t-6072.3729133606 [mm]\t2825.15907287598 [mm]"
+"2 [s]\t11364.56982421875 [N]\t-44553.50244140625 [N]\t-26.586366176605225 [N]\t0.0[N mm]\t0.0[N mm]\t0.0[N mm]\t1561.00350618362 [mm]\t-6072.3729133606 [mm]\t2825.15907287598 [mm]"
+
+julia> time, Fx, Fy, Fz, Mx, My, Mz, px, py, pz = parse.(Quantity{Float64}, split(lin, '\t'))
+10-element Array{Quantity{Float64,D,U} where U where D,1}:
+                 2.0s
+   11364.56982421875N
+  -44553.50244140625N
+ -26.586366176605225N
+    0.0mm∙N
+    0.0mm∙N
+    0.0mm∙N
+   1561.00350618362mm
+   -6072.3729133606mm
+   2825.15907287598mm
+
 ```
 
 ## Goals
