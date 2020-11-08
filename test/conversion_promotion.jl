@@ -50,12 +50,13 @@ end
 end
 
 @testset "Quantity parse" begin
-@test parse(Quantity{Float64}, "2.0kN") == 2.0kN
-@test  parse(Quantity{Int64}, "2 kN") == 2kN
-@test  parse(Quantity{Int64}, "2 [m]") == 2m
-@test  parse(Quantity{Float64}, "2 [m]") == 2.0m
-@test  parse(Quantity{Float64}, "2 [N m]") == 2.0Nm
-lin = "2 [s]\t11364.56982421875 [N]\t-44553.50244140625 [N]\t-26.586366176605225 [N]\t0.0[N mm]\t0.0[N mm]\t0.0[N mm]\t1561.00350618362 [mm]\t-6072.3729133606 [mm]\t2825.15907287598 [mm]"
-data = parse.(Quantity{Float64}, split(lin, '\t'))
-@test  data ==  [ 2.0s, 11364.56982421875N, -44553.50244140625N, -26.586366176605225N,  0.0mm∙N, 0.0mm∙N, 0.0mm∙N, 1561.00350618362mm, -6072.3729133606mm, 2825.15907287598mm]
+    @test parse(Quantity{Float64}, "2.0kN") == 2.0kN
+    @test  parse(Quantity{Int64}, "2 kN") == 2kN
+    @test  parse(Quantity{Int64}, "2 [m]") == 2m
+    @test  parse(Quantity{Float64}, "2 [m]") == 2.0m
+    @test  parse(Quantity{Float64}, "2 [N m]") == 2.0Nm
+    lin = "2 [s]\t11364.56982421875 [N]\t-44553.50244140625 [N]\t-26.586366176605225 [N]\t0.0[N mm]\t0.0[N mm]\t0.0[N mm]\t1561.00350618362 [mm]\t-6072.3729133606 [mm]\t2825.15907287598 [mm]"
+    data = parse.(Quantity{Float64}, split(lin, '\t'))
+    @test  data ==  [ 2.0s, 11364.56982421875N, -44553.50244140625N, -26.586366176605225N,  0.0mm∙N, 0.0mm∙N, 0.0mm∙N, 1561.00350618362mm, -6072.3729133606mm, 2825.15907287598mm]
+    @test parse(Quantity{Float64}, "2.3E05m") == 230000m
 end
