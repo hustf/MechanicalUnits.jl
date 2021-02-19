@@ -64,7 +64,9 @@ We avoid defining common and ambigious derived dimensions. For example, the deri
 ### Installation
 
 ´´´
-(v1.5) pkg> add https://github.com/hustf/MechanicalUnits.jl.git
+pkg> registry add https://github.com/hustf/M8
+pkg> registry add MechanicalUnits
+
 ´´´
 
 
