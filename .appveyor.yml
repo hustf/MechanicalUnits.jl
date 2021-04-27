@@ -1,9 +1,7 @@
 # Documentation: https://github.com/JuliaCI/Appveyor.jl
 environment:
   matrix:
-  - julia_version: 1.3.0
-  - julia_version: 1.4.2
-  - julia_version: nightly
+  - julia_version: 1.6.0
   repo_token:
     secure: locJtjEVIkbzBA/+67vXJHOupVRB1TqocLm8QFGSjCRPIpOVaJcvTLnxTnUY+Lvu
 platform:
@@ -11,7 +9,7 @@ platform:
   - x64
 matrix:
   allow_failures:
-    - julia_version: nightly
+    - julia_version: 1.6.0
 branches:
   only:
     - master
@@ -24,6 +22,7 @@ notifications:
 install:
   - ps: iex ((new-object net.webclient).DownloadString("https://raw.githubusercontent.com/JuliaCI/Appveyor.jl/version-1/bin/install.ps1"))
 build_script:
+  - C:\julia\bin\julia -e "Pkg.registry"
   - echo "%JL_BUILD_SCRIPT%"
   - C:\julia\bin\julia -e "%JL_BUILD_SCRIPT%"
 test_script:

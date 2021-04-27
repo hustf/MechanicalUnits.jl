@@ -12,3 +12,4 @@ using Test
         include("prefixes.jl")
     end
 end
+nothing

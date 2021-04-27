@@ -34,21 +34,21 @@ Benefits to using quantities rather than just numbers:
 | Units | (Derived) dimension | Dimensions |
 | ------------- | ------------- | ------------- |
 | nm μm μm mm cm dm m km Mm Gm Tm Pm inch ft    | Length       | ᴸ |
-| ns μs μs ms s minute d h yr                   | Time         | ᵀ |  
+| ns μs μs ms s minute d h yr                   | Time         | ᵀ |
 | mg cg kg lb shton                             | Mass         | ᴹ |
 | K Ra °C °F                                    | Temperature  | ᶿ |
-| Angles                                        | NoDims        | rad ° | 
+| Angles                                        | NoDims        | rad ° |
 | N daN kN MN GN lbf kip                        | Force        | ᴸ∙ ᴹ ∙ ᵀ⁻² |
 | Pa kPa MPa GPa atm bar                        | Pressure      | ᴹ ∙ ᴸ⁻¹ ∙ ᵀ⁻² |
-| J kJ MJ GJ                                    | Energy        | ᴸ² ∙ ᴹ ∙ ᵀ⁻² | 
-| Nmm Nm daNm kNm MNm GNm                       | Moment        | ᴸ² ∙ ᴹ ∙ ᵀ⁻² | 
-| l dl cl ml                                    | Volume        | ᴸ³ | 
-| g                                             | Acceleration  | ᴸ ∙ ᵀ⁻² | 
+| J kJ MJ GJ                                    | Energy        | ᴸ² ∙ ᴹ ∙ ᵀ⁻² |
+| Nmm Nm daNm kNm MNm GNm                       | Moment        | ᴸ² ∙ ᴹ ∙ ᵀ⁻² |
+| l dl cl ml                                    | Volume        | ᴸ³ |
+| g                                             | Acceleration  | ᴸ ∙ ᵀ⁻² |
 
 ## Dimensions
-Dimensions are useful for defining specialized functions, e.g. `plot(F::Force)`. 
+Dimensions are useful for defining specialized functions, e.g. `plot(F::Force)`.
 
-| Derived dimension | Dimensions | 
+| Derived dimension | Dimensions |
 | ------------- | ------------- |
 | Area         | ᴸ²            |
 | Velocity     | ᴸ / ᵀ         |
@@ -62,6 +62,7 @@ We avoid defining common and ambigious derived dimensions. For example, the deri
 ## Usage
 
 ### Installation
+We appreciate 'Unitful.jl', but do need some specific syntax. To avoid conflict, Unitfu.jl and this package is registered in a separate registry, which holds related packages for solving, plotting, sketching and latex with units.
 
 ´´´
 pkg> registry add https://github.com/hustf/M8
@@ -72,14 +73,14 @@ pkg> registry add MechanicalUnits
 
 ### Example REPL workflow
 
-Let us do some side calculations (other examples in that folder):
+Let us do some quick side calculations (code in `/examples`):
 ```julia
 julia> using MechanicalUnits
 
 julia> m_air = 1000kg; c_p = 1.00kJ/(kg*K)
 1.0kJ∙kg⁻¹∙K⁻¹
 
-julia> @import_expand ~W   # Watt = Joule / Second is not exported by default.
+julia> @import_expand ~W   # Watt = Joule / Second is not exported by default. Several: (u1, u2,..)
 
 julia> Q_cp(T1, T2) = m_air*c_p*(T2-T1) |> (kW*h)
 Q_cp (generic function with 1 method)
@@ -93,14 +94,15 @@ mm
 julia> preferunits(m)
 
 julia> m_s = [30kg/m 28.8lb/ft]
-1×2 Array{Float64{kg∙m⁻¹},2}:
+1×2 Matrix{Quantity{Float64,  ᴹ∙ ᴸ⁻¹, FreeUnits{(kg, m⁻¹),  ᴹ∙ ᴸ⁻¹, nothing}}}:
  30.0  42.8591
 
 julia> l_s = 93ft*[3 4]m/s
-372ft
+1×2 Matrix{Quantity{Int64,  ᴸ²∙ ᵀ⁻¹, FreeUnits{(ft, m, s⁻¹),  ᴸ²∙ ᵀ⁻¹, nothing}}}:
+ 279  372
 
 julia> m_s.*l_s |> (kg*m)
-1×2 Array{Float64{kg∙m∙s⁻¹},2}:
+1×2 Matrix{Quantity{Float64,  ᴸ∙ ᴹ∙ ᵀ⁻¹, FreeUnits{(kg, m, s⁻¹),  ᴸ∙ ᴹ∙ ᵀ⁻¹, nothing}}}:
  2551.18  4859.61
 
 julia> E=206GPa; h_y = 100mm; b = 30mm; I = 1/12 * b * h_y^3
@@ -113,33 +115,32 @@ julia> F*L^3/(3E*I) |> mm
 5.0778770226537215mm
 
 julia> l_wire = 20m
+20m
 
 julia> k(d) = E * 0.691 * π/4 * d^2 / l_wire |> N/mm
 k (generic function with 1 method)
 
 julia> k.([5 6 8]mm)
-1×3 Array{Float64{N∙mm⁻¹},2}:
+1×3 Matrix{Quantity{Float64,  ᴹ∙ ᵀ⁻², FreeUnits{(mm⁻¹, N),  ᴹ∙ ᵀ⁻², nothing}}}:
  139.748  201.237  357.755
 
 julia> δ(d)= F / k(d) |> mm
 δ (generic function with 1 method)
 
 julia> δ.([5, 6, 8]mm)
-3-element Array{Float64{mm},1}:
+3-element Vector{Quantity{Float64,  ᴸ, FreeUnits{(mm,),  ᴸ, nothing}}}:
   7.017388381199098
   4.873186375832707
  2.7411673364058977
 
 julia> d = 6mm
-ERROR: cannot assign variable Unitfu.d from module Main
-Stacktrace:
- [1] top-level scope at none:0
+6mm
 
 julia> dimension(d)
- ᵀ
+ ᴸ
 
 julia> 1d |> s
-(86400//1)s
+(3//500)m
 
 julia> @import_expand ~V ~W ~A  G
 
@@ -147,54 +148,168 @@ julia> sqrt(1G²)
 6.6743e-11m³∙kg⁻¹∙s⁻²
 
 julia> [1V*12.0A 2W 1kg*g*1m/2s]*30minute |> kJ
-1×3 Array{Float64{kJ},2}:
+1×3 Matrix{Quantity{Float64,  ᴸ²∙ ᴹ∙ ᵀ⁻², FreeUnits{(kJ,),  ᴸ²∙ ᴹ∙ ᵀ⁻², nothing}}}:
  21.6  3.6  8.82598
 
 julia> ω = 50*2π*rad/s
-π = 3.1415926535897...rad∙s⁻¹
+314.1592653589793rad∙s⁻¹
 
 julia> t = (0:0.006:0.02)s
-0.0s:0.006s:0.018s
+(0.0:0.006:0.018)s
 
 julia> u = 220V*exp.(im∙(ω∙t))
-4-element Array{Complex{Float64}{V},1}:
+4-element Vector{Quantity{ComplexF64,  ᴸ²∙ ᴹ∙ ᴵ⁻¹∙ ᵀ⁻³, FreeUnits{(V,),  ᴸ²∙ ᴹ∙ ᴵ⁻¹∙ ᵀ⁻³, nothing}}}:
+                              220.0 + 0.0im
+   -67.98373876248841 + 209.2324335849338im
+ -177.98373876248843 - 129.31275550434407im
+  177.98373876248843 - 129.31275550434412im
+
+julia> typeof(dyn)
+FreeUnits{(dyn,),  ᴸ∙ ᴹ∙ ᵀ⁻², nothing}                              ),  ᴸ²∙ ᴹ∙ ᵀ⁻³, nothing}}}:
+                                                          y default
+julia> 1dyn |> μm
+10kg∙μm∙s⁻²
+
+julia>
+
+julia>
+julia> lin = "2 [s]\t11364.56982421875 [N]\t-44553.50244140625 [N]\t-26.586366176605225 [N]\t0.0[N mm]\t0.0[N mm]"
+"2 [s]\t11364.56982421875 [N]\t-44553.50244140625 [N]\t-26.586366176605225 [N]\t0.0[N mm]\t0.0[N mm]"
+julia> strinp = "2 [s]\t11364.56982421875 [N]\t-44553.50240625 [N]\t4140625 [N]\t-26.586366176605225 [N]\t0.0[N mm]\t0.0[N mm]"                                                         .586366176
+"2 [s]\t11364.56982421875 [N]\t-44553.50244140625 [N]\t-26.586366176605225 [N]\t0.0[N mm]\t0.0[N mm]"               4140625 [N
+
+julia>                                                    .586366176
+
+julia>
+
+julia> time, Fx, Fy, Fz, Mx, My, Mz, px, py, pz = parse.(Quantity{Float64}, split(lin, '\t'))
+ERROR: BoundsError: attempt to access 6-element Vector{Quantity{Float64, D, U} where {D, U}} at index [7]StacktraFloat64, D, U} where {D, U}} at index [7]Stacktrace:
+ [1] getindex
+   @ .\array.jl:801 [inlined]
+ [2] indexed_iterate(a::Vector{Quantity{Float64, D, U} where {D, U}}, i::Int64, state::Int64)    U}}, i::Int64, state::Int64)
+   @ Base .\tuple.jl:87
+ [3] top-level scope
+   @ REPL[38]:1
+                                                                                        , '\t'))index [7]Stacktrajulia> using MechanicalUnits
+
+julia> m_air = 1000kg; c_p = 1.00kJ/(kg*K)
+1.0kJ∙kg⁻¹∙K⁻¹
+
+julia> @import_expand ~W   # Watt = Joule / Second is not exported by default. Several: (u1, u2,..)
+
+julia> Q_cp(T1, T2) = m_air*c_p*(T2-T1) |> (kW*h)
+Q_cp (generic function with 1 method)
+
+julia> Q_cp(20°C, 985°C)
+268.05555555555554kW∙h
+
+julia> dm |> upreferred
+mm
+
+julia> preferunits(m)
+
+julia> m_s = [30kg/m 28.8lb/ft]
+1×2 Matrix{Quantity{Float64,  ᴹ∙ ᴸ⁻¹, FreeUnits{(kg, m⁻¹),  ᴹ∙ ᴸ⁻¹, nothing}}}:
+ 30.0  42.8591
+
+julia> l_s = 93ft*[3 4]m/s
+1×2 Matrix{Quantity{Int64,  ᴸ²∙ ᵀ⁻¹, FreeUnits{(ft, m, s⁻¹),  ᴸ²∙ ᵀ⁻¹, nothing}}}:
+ 279  372
+
+julia> m_s.*l_s |> (kg*m)
+1×2 Matrix{Quantity{Float64,  ᴸ∙ ᴹ∙ ᵀ⁻¹, FreeUnits{(kg, m, s⁻¹),  ᴸ∙ ᴹ∙ ᵀ⁻¹, nothing}}}:
+ 2551.18  4859.61
+
+julia> E=206GPa; h_y = 100mm; b = 30mm; I = 1/12 * b * h_y^3
+2.5e6mm⁴
+
+julia> L = 2m; F=100kg*g |> N
+980.665N
+
+julia> F*L^3/(3E*I) |> mm
+5.0778770226537215mm
+
+julia> l_wire = 20m
+20m
+
+julia> k(d) = E * 0.691 * π/4 * d^2 / l_wire |> N/mm
+k (generic function with 1 method)
+
+julia> k.([5 6 8]mm)
+1×3 Matrix{Quantity{Float64,  ᴹ∙ ᵀ⁻², FreeUnits{(mm⁻¹, N),  ᴹ∙ ᵀ⁻², nothing}}}:
+ 139.748  201.237  357.755
+
+julia> δ(d)= F / k(d) |> mm
+δ (generic function with 1 method)
+
+julia> δ.([5, 6, 8]mm)
+3-element Vector{Quantity{Float64,  ᴸ, FreeUnits{(mm,),  ᴸ, nothing}}}:
+  7.017388381199098
+  4.873186375832707
+ 2.7411673364058977
+
+julia> d = 6mm
+6mm
+
+julia> dimension(d)
+ ᴸ
+
+julia> 1d |> s
+(3//500)m
+
+julia> @import_expand ~V ~W ~A  G
+
+julia> sqrt(1G²)
+6.6743e-11m³∙kg⁻¹∙s⁻²
+
+julia> [1V*12.0A 2W 1kg*g*1m/2s]*30minute |> kJ
+1×3 Matrix{Quantity{Float64,  ᴸ²∙ ᴹ∙ ᵀ⁻², FreeUnits{(kJ,),  ᴸ²∙ ᴹ∙ ᵀ⁻², nothing}}}:
+ 21.6  3.6  8.82598
+
+julia> ω = 50*2π*rad/s
+314.1592653589793rad∙s⁻¹
+
+julia> t = (0:0.006:0.02)s
+(0.0:0.006:0.018)s
+
+julia> u = 220V*exp.(im∙(ω∙t))
+4-element Vector{Quantity{ComplexF64,  ᴸ²∙ ᴹ∙ ᴵ⁻¹∙ ᵀ⁻³, FreeUnits{(V,),  ᴸ²∙ ᴹ∙ ᴵ⁻¹∙ ᵀ⁻³, nothing}}}:
                               220.0 + 0.0im
    -67.98373876248841 + 209.2324335849338im
  -177.98373876248843 - 129.31275550434407im
   177.98373876248843 - 129.31275550434412im
 
 julia> u*1.5A |> J
-4-element Array{Complex{Float64}{J∙s⁻¹},1}:
+4-element Vector{Quantity{ComplexF64,  ᴸ²∙ ᴹ∙ ᵀ⁻³, FreeUnits{(J, s⁻¹),  ᴸ²∙ ᴹ∙ ᵀ⁻³, nothing}}}:
                              330.0 + 0.0im
  -101.97560814373261 + 313.8486503774007im
  -266.97560814373264 - 193.9691332565161im
   266.97560814373264 - 193.9691332565162im
 
 ```
-### Adding or removing units
-If you want fewer globally defined variables, @import_expand just what you need: 
+### Importing fewer units, or other units
+If you want fewer globally defined variables, @import_expand just what you need:
 ```julia
-julia> import MechanicalUnits: @import_expand, ∙
-
-julia> @import_expand ~m     # ~ : also import SI prefixes
+julia> @import_expand(~m, dyn)     # ~ : also import SI prefixes for metre
 
 julia> (1.0cm², 2.0mm∙m, 3.0dm⁴/m² ) .|> mm²
 (100.0, 2000.0, 300.0)mm²
 
-julia> @import_expand dyn    # This unit is not exported by default
-
 julia> typeof(dyn)
-Unitfu.FreeUnits{(dyn,), ᴸ∙ ᴹ∙ ᵀ⁻²,nothing}
+FreeUnits{(dyn,),  ᴸ∙ ᴹ∙ ᵀ⁻², nothing}
 
 julia> 1dyn |> μm
 10kg∙μm∙s⁻²
 
-julia> # When parsing text file, spaces as multipliers and brackets are allowed. Just specify the numeric type:
-julia> lin = "2 [s]\t11364.56982421875 [N]\t-44553.50244140625 [N]\t-26.586366176605225 [N]\t0.0[N mm]\t0.0[N mm]\t0.0[N mm]\t1561.00350618362 [mm]\t-6072.3729133606 [mm]\t2825.15907287598 [mm]"
-"2 [s]\t11364.56982421875 [N]\t-44553.50244140625 [N]\t-26.586366176605225 [N]\t0.0[N mm]\t0.0[N mm]\t0.0[N mm]\t1561.00350618362 [mm]\t-6072.3729133606 [mm]\t2825.15907287598 [mm]"
+```
 
-julia> time, Fx, Fy, Fz, Mx, My, Mz, px, py, pz = parse.(Quantity{Float64}, split(lin, '\t'))
-10-element Array{Quantity{Float64,D,U} where U where D,1}:
+When parsing a text file, typically from some other software, spaces as multipliers and brackets are allowed. Tabs are also accepted. But you need to specify the numeric type of output quantities, like this:
+
+```julia
+julia> strinp = "2 [s]\t11364.56982421875 [N]\t-44553.50244140625 [N]\t-26.586366176605225 [N]\t0.0[N mm]\t0.0[N mm]\t0.0[N mm]\t1561.00350618362 [mm]\t-6072.3729133606 [mm]\t2825.15907287598 [mm]";
+
+julia> time, Fx, Fy, Fz, Mx, My, Mz, px, py, pz = parse.(Quantity{Float64}, split(strinp, '\t'))
+10-element Vector{Quantity{Float64, D, U} where {D, U}}:
                  2.0s
    11364.56982421875N
   -44553.50244140625N
@@ -239,7 +354,7 @@ See [Unitful.jl](https://github.com/PainterQubits/Unitful.jl)
 
 - Open an [issue](https://github.com/hustf/MechanicalUnits/issues/new) and let's make this better together!
 
-- *Bug reports, feature requests, patches, and well-wishes are always welcome.* 
+- *Bug reports, feature requests, patches, and well-wishes are always welcome.*
 
 ## Contributing
 

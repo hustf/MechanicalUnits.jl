@@ -1,7 +1,8 @@
 # Run line by line in the REPL, or ctrl + enter in VSCode
+# First code section
 using MechanicalUnits
 m_air = 1000kg; c_p = 1.00kJ/(kg*K)
-@import_expand ~W   # Watt = Joule / Second is not exported by default.
+@import_expand ~W   # Watt = Joule / Second is not exported by default. Several: (u1, u2,..)
 Q_cp(T1, T2) = m_air*c_p*(T2-T1) |> (kW*h)
 Q_cp(20°C, 985°C)
 dm |> upreferred
@@ -27,9 +28,21 @@ sqrt(1G²)
 t = (0:0.006:0.02)s
 u = 220V*exp.(im∙(ω∙t))
 u*1.5A |> J
+
+# Second code section
 import MechanicalUnits: @import_expand, ∙
-@import_expand ~m     # ~ : also import SI prefixes
+@import_expand(~m, dyn)     # ~ : also import SI prefixes for metre
 (1.0cm², 2.0mm∙m, 3.0dm⁴/m² ) .|> mm²
-@import_expand dyn    # This unit is not exported by default
 typeof(dyn)
 1dyn |> μm
+
+
+
+# Third code section
+strinp = "2 [s]\t11364.56982421875 [N]\t-44553.50244140625 [N]\t-26.586366176605225 [N]\t0.0[N mm]\t mm]\t1561.00350610.0[N mm]\t0.0[N mm]\t1561.00350618362 [mm]\t-6072.3729133606 [mm]\t2825.15907287598 [mm]"
+
+
+
+strinp = "2 [s]\t11364.56982421875 [N]\t-44553.50244140625 [N]\t-26.586366176605225 [N]\t0.0[N mm]\t0.0[N mm]\t0.0[N mm]\t1561.00350618362 [mm]\t-6072.3729133606 [mm]\t2825.15907287598 [mm]";
+
+time, Fx, Fy, Fz, Mx, My, Mz, px, py, pz = parse.(Quantity{Float64}, split(strinp, '\t'))
