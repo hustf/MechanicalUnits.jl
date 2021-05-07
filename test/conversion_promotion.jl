@@ -38,8 +38,8 @@ end
 
 @testset "Conversions with arrays" begin
     v = [1N 2daN]
-    @test v |> kg == [1000//1  20000//1]kg∙mm∙s⁻²
-    @test (v |> kg .=== Array([(1000//1) (20000//1)]kg*mm*s^-2)) == [true true]
+    @test all(v .|> kg .=== (([1000 // 1 20000 // 1] * kg) ∙ mm) ∙ s⁻² )
+    @test all(v .|> kg .=== Array([(1000//1) (20000//1)]kg*mm*s^-2))
 end
 
 @testset "Mixed collections" begin

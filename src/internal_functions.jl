@@ -30,7 +30,7 @@ end
 
 """
 Import non-affine units from Unitfu.
-Expand to also include exponents -4 to 4.
+Expand to also include 'fancy' exponents -4 to 4, i.e. m² etc.
 """
 macro import_expand(args...)
     expr = Expr(:block)

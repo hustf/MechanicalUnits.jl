@@ -5,7 +5,7 @@ export ∙
 # Import / exports for short and parseable type signatures
 import Unitfu: Time, Length, Mass, Temperature, Current, Luminosity, Amount
 import Unitfu: ᵀ , ᴸ , ᴹ , ᶿ, ᴶ , ᴺ
-import Unitfu: lookup_units
+import Unitfu: lookup_units, promote_to_derived
 export Time, Length, Mass, Temperature, Current, Luminosity, Amount, Level
 export ᵀ , ᴸ , ᴹ , ᶿ , ᴶ , ᴺ
 export Quantity, DimensionlessQuantity, NoUnits, NoDims
@@ -22,7 +22,7 @@ export logunit, unit, absoluteunit, dimension, uconvert, ustrip, upreferred, ∙
 export uconvertp, uconvertrp, reflevel, linear
 
 # Useful functions that are not exported by Unitfu.
-export preferunits, convfact
+export preferunits, convfact, promote_to_derived
 
 # A vector of all the exported units. This is printed during precompilation.
 export MECH_UNITS

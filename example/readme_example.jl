@@ -9,7 +9,7 @@ dm |> upreferred
 preferunits(m)
 m_s = [30kg/m 28.8lb/ft]
 l_s = 93ft*[3 4]m/s
-m_s.*l_s |> (kg*m)
+m_s.*l_s .|> (kg*m)
 E=206GPa; h_y = 100mm; b = 30mm; I = 1/12 * b * h_y^3
 L = 2m; F=100kg*g |> N
 F*L^3/(3E*I) |> mm
@@ -23,11 +23,11 @@ dimension(d)
 1d |> s
 @import_expand ~V ~W ~A  G
 sqrt(1G²)
-[1V*12.0A 2W 1kg*g*1m/2s]*30minute |> kJ
+[1V*12.0A 2W 1kg*g*1m/2s]*30minute .|> kJ
 ω = 50*2π*rad/s
 t = (0:0.006:0.02)s
 u = 220V*exp.(im∙(ω∙t))
-u*1.5A |> J
+u*1.5A .|> J
 
 # Second code section
 import MechanicalUnits: @import_expand, ∙
