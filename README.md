@@ -76,17 +76,13 @@ pkg> registry add MechanicalUnits
 Let us do some quick side calculations (code in `/example`):
 
 ```julia
-julia> # Run line by line in the REPL, or ctrl + enter in VSCode
-
-julia> # First code section
-
 julia> using MechanicalUnits
 
 julia> m_air = 1000kg; c_p = 1.00kJ/(kg*K)
 1.0kJ∙kg⁻¹∙K⁻¹
 julia> @import_expand ~W   # Watt = Joule / Second is not exported by default. Several: (u1, u2,..)
 
-julia> Q_cp(T1, T2) = m_air*c_p*(T2-T1) |> (kW*h)
+julia> Q_cp(T1, T2) = m_air * c_p * (T2 - T1) |> (kW*h)
 Q_cp (generic function with 1 method)
 
 julia> Q_cp(20°C, 985°C)
@@ -95,7 +91,7 @@ julia> Q_cp(20°C, 985°C)
 julia> dm |> upreferred
 mm
 
-julia> preferunits(m)
+julia> preferunits(m) # No effect, since upreferred was called once this session
 
 julia> m_s = [30kg/m 28.8lb/ft]
 1×2 Matrix{Quantity{Float64,  ᴹ∙ ᴸ⁻¹, FreeUnits{(kg, m⁻¹),  ᴹ∙ ᴸ⁻¹, nothing}}}:
@@ -115,7 +111,7 @@ julia> E=206GPa; h_y = 100mm; b = 30mm; I = 1/12 * b * h_y^3
 julia> L = 2m; F=100kg*g |> N
 980.665N
 
-julia> F*L^3/(3E*I) |> mm
+julia> F*L^3/(3E*I) |> upreferred
 5.0778770226537215mm
 
 julia> l_wire = 20m
@@ -174,7 +170,6 @@ julia> u*1.5A .|> J
  -101.97560814373261 + 313.8486503774007im
  -266.97560814373264 - 193.9691332565161im
   266.97560814373264 - 193.9691332565162im
-
 ```
 
 ### Importing fewer units, or other units
@@ -183,18 +178,19 @@ If you want fewer globally defined variables, @import_expand just what you need:
 ```julia
 julia> import MechanicalUnits: @import_expand, ∙
 
-julia> @import_expand(~m, dyn)     # ~ : also import SI prefixes for metre
+julia> @import_expand ~m dyn     # ~ : also import SI prefixes for metre
 
 julia> (1.0cm², 2.0mm∙m, 3.0dm⁴/m² ) .|> mm²
 (100.0, 2000.0, 300.0)mm²
 
 julia> typeof(dyn)
-Unitfu.FreeUnits{(dyn,),  ᴸ∙ ᴹ∙ ᵀ⁻², nothing}
+FreeUnits{(dyn,),  ᴸ∙ ᴹ∙ ᵀ⁻², nothing}
 
 julia> 1dyn |> μm
 10kg∙μm∙s⁻²
 ```
 
+### Parsing text
 When parsing a text file, typically from some other software, spaces as multipliers and brackets are allowed. Tabs are also accepted. But you need to specify the numeric type of output quantities, like this:
 
 ```julia
@@ -213,6 +209,25 @@ julia> time, Fx, Fy, Fz, Mx, My, Mz, px, py, pz = parse.(Quantity{Float64}, spli
    -6072.3729133606mm
    2825.15907287598mm
 ```
+
+
+### Special case: Units without dimension
+Unit conversion works slightly different with such units, because the dimension is undefined. Here are some workarounds (using `ustrip` is discouraged since calculation errors may be masked by such operations):
+
+```julia
+julia> strain = 10.6μm/m
+10.6μm∙m⁻¹
+
+julia> strain |> upreferred
+1.0599999999999998e-5
+
+julia> strain *m/μm
+10.6
+
+julia> strain |> NoUnits
+1.0599999999999998e-5
+```
+
 
 ## Goals
 This dependency of a [fork](https://github.com/hustf/Unitfu.jl) of [Unitful.jl](https://github.com/PainterQubits/Unitful.jl) aims to be a tool for quick side calculations in an office computer.
