@@ -69,23 +69,18 @@ end
     shortp((1//100)kg) == "(1//100)\e[36mkg\e[39m"
     longp((1//100)kg) == "(1//100)\e[36mkg\e[39m"
 end
-@testset "Constructors from type signatures" begin
-    # Unitfu now prints shorter type signatures, which
-    # on reconstruction makes FreeUnits instead of the original.
-    # The shorter output is more readable.
-end
 
 @testset "Type signatures, exponents -4 to 4" begin
-    dimdi = Dict([m => " ᴸ", s => " ᵀ", kg => " ᴹ",
-            Ra => " ᶿ", K => " ᶿ", h => " ᵀ",
-            μm => " ᴸ", minute => " ᵀ"])
+    dimdi = Dict([m => "𝐋", s => "𝐓", kg => "𝐌",
+            Ra => "𝚯", K => "𝚯", h => "𝐓",
+            μm => "𝐋", minute => "𝐓"])
     for bu in ["m", "s", "kg", "Ra", "K", "h", "μm", "minute"],
         di in ["⁻⁴" , "⁻³", "⁻²" , "⁻¹", "²", "³", "⁴"]
         res = shortp(typeof(eval(Symbol(bu*di))))
         expec1 = "FreeUnits{(\e[36m" * bu * di* "\e[39m,),"
-        expec2a = ""
-        expec2b = " "
-        expec3 = dimdi[eval(Meta.parse(bu)) ]
+        expec2a = " "
+        expec2b = ""
+        expec3 = dimdi[eval(Meta.parse(bu))]
         expec4 =  di * ", nothing}"
         @test res == expec1*expec2a*expec3*expec4 ||
               res == expec1*expec2b*expec3*expec4
@@ -97,7 +92,7 @@ end
     st ="[2 4]\e[36mm\e[39m"
     @test shortp(2a1) == st
 
-    st = "1×2 Matrix{Quantity{Int64,  ᴸ, FreeUnits{(\e[36mm\e[39m,),  ᴸ, nothing}}}:\n 2  4"
+    st = "1×2 Matrix{Quantity{Int64, 𝐋, FreeUnits{(\e[36mm\e[39m,), 𝐋, nothing}}}:\n 2  4"
     @test longp(2a1) == st
 
     a2 = [1 2]m*s^-1
@@ -108,7 +103,7 @@ end
     st = "[20, 12, 4, -4]\e[36mm\e[39m"
     @test shortp(2a3) == st
 
-    st = "4-element Vector{Quantity{Int64,  ᴸ, FreeUnits{(\e[36mm\e[39m,),  ᴸ, nothing}}}:\n 20\n 12\n  4\n -4"
+    st = "4-element Vector{Quantity{Int64, 𝐋, FreeUnits{(\e[36mm\e[39m,), 𝐋, nothing}}}:\n 20\n 12\n  4\n -4"
     @test longp(2a3) == st
 end
 
@@ -139,18 +134,18 @@ end
 @testset "Dimensions" begin
     u  = s*m*kg*K
     @test shortp(u) == "\e[36mkg\e[39m∙\e[36mK\e[39m∙\e[36mm\e[39m∙\e[36ms\e[39m"
-    @test shortp(dimension(u)) == " ᴸ∙ ᴹ∙ ᶿ∙ ᵀ"
-    st = "FreeUnits{(\e[36mkg\e[39m, \e[36mK\e[39m, \e[36mm\e[39m, \e[36ms\e[39m),  ᴸ∙ ᴹ∙ ᶿ∙ ᵀ, nothing}"
+    @test shortp(dimension(u)) == "𝐋∙𝐌∙𝚯∙𝐓"
+    st = "FreeUnits{(\e[36mkg\e[39m, \e[36mK\e[39m, \e[36mm\e[39m, \e[36ms\e[39m), 𝐋∙𝐌∙𝚯∙𝐓, nothing}"
     @test shortp(typeof(u)) == st
 
     @test shortp(typeof(dimension(u))) == "Dimensions{(Dimension{:Length}(1//1), Dimension{:Mass}(1//1), Dimension{:Temperature}(1//1), Dimension{:Time}(1//1))}"
-    @test shortp(dimension(u^2)) == " ᴸ²∙ ᴹ²∙ ᶿ²∙ ᵀ²"
+    @test shortp(dimension(u^2)) == "𝐋²∙𝐌²∙𝚯²∙𝐓²"
     @import_expand A mol
     v  = A * mol
     @test shortp(v) == "\e[36mA\e[39m∙\e[36mmol\e[39m"
-    @test shortp(dimension(v)) == " ᴺ∙ ᴵ"
-    st = "FreeUnits{(\e[36mA\e[39m, \e[36mmol\e[39m),  ᴺ∙ ᴵ, nothing}"
+    @test shortp(dimension(v)) == "𝐍∙𝐈"
+    st = "FreeUnits{(\e[36mA\e[39m, \e[36mmol\e[39m), 𝐍∙𝐈, nothing}"
     @test shortp(typeof(v)) == st
     @test shortp(typeof(dimension(v))) == "Dimensions{(Dimension{:Amount}(1//1), Dimension{:Current}(1//1))}"
-    @test shortp(dimension(v^2)) == " ᴺ²∙ ᴵ²"
+    @test shortp(dimension(v^2)) == "𝐍²∙𝐈²"
 end
