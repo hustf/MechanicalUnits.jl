@@ -14,14 +14,41 @@
 
 
 ### Convenient units in the REPL
-Using units should be quick, nice and easy. That's the aim of this package, built on a slight [modification](https://github.com/hustf/Unitfu.jl).of [Unitful.jl](https://github.com/PainterQubits/Unitful.jl).
+Using units should be quick, nice and easy. That's the aim of this package, built on [Unitfu](https://github.com/hustf/Unitfu.jl), a slight modification of [Unitful.jl](https://github.com/PainterQubits/Unitful.jl).
 
-We enhance readability with colors, and we don't throw errors at meaningful input:
+'Unitfu' enhances readability:
+  - units are printed with colors
+  - use '∙' instead of '*'
+  - print common units outside of collection brackets:
+´´´
+julia> [1,2,3]m |> println
+[1, 2, 3]m
+julia> [1,2,3s]m |> println
+[1m, 2m, 3m∙s]
+´´´
+
+'Unitfu' (and so also this package) makes input easier:
+  - drop spaces between number and measure. Printed lines can be re-used as input: `x = 1kg`
+  - don't throw errors at meaningful conversions. 'Conversion factors' can be quantities, not just numbers.
 
 ```julia
-julia> 1kg∙m∙s⁻¹ |> N
-1N∙s
+julia> using MechanicalUnits
+
+julia> 1kg∙km/s |> N
+1000N∙s
 ```
+
+'MechanicalUnits' adds a macro for units including SI prefixes and more readable  exponents. This is useful when you know in advance which units you are going to work with:
+```julia
+julia> using MechanicalUnits: @import_expand
+
+julia> @import_expand ~ m
+
+julia> vol = 2km³
+2km³
+```
+
+You can also just 'use MechanicalUnits' to import all the commonly used units.
 
 Benefits to using quantities rather than just numbers:
 * Fewer mistakes
@@ -30,35 +57,36 @@ Benefits to using quantities rather than just numbers:
 * Quicker problem solving
 * More ways to understand a problem or read a calculation
 * Functions can dispatch based on input dimensions: You would plot a force vector differently to a position.
+* Makes good quality checking of reports realistically possible.
 
 ## Units
 | Units | (Derived) dimension | Dimensions |
 | ------------- | ------------- | ------------- |
-| nm μm μm mm cm dm m km Mm Gm Tm Pm inch ft    | Length       | ᴸ |
-| ns μs μs ms s minute d h yr                   | Time         | ᵀ |
-| mg cg kg lb shton                             | Mass         | ᴹ |
-| K Ra °C °F                                    | Temperature  | ᶿ |
+| nm μm μm mm cm dm m km Mm Gm Tm Pm inch ft    | Length       | 𝐋 |
+| ns μs μs ms s minute d h yr                   | Time         | 𝐓 |
+| mg cg kg lb shton                             | Mass         | 𝐌 |
+| K Ra °C °F                                    | Temperature  | 𝚯 |
 | Angles                                        | NoDims        | rad ° |
-| N daN kN MN GN lbf kip                        | Force        | ᴸ∙ ᴹ ∙ ᵀ⁻² |
-| Pa kPa MPa GPa atm bar                        | Pressure      | ᴹ ∙ ᴸ⁻¹ ∙ ᵀ⁻² |
-| J kJ MJ GJ                                    | Energy        | ᴸ² ∙ ᴹ ∙ ᵀ⁻² |
-| Nmm Nm daNm kNm MNm GNm                       | Moment        | ᴸ² ∙ ᴹ ∙ ᵀ⁻² |
-| l dl cl ml                                    | Volume        | ᴸ³ |
-| g                                             | Acceleration  | ᴸ ∙ ᵀ⁻² |
+| N daN kN MN GN lbf kip                        | Force        | 𝐋∙𝐌∙𝐓⁻² |
+| Pa kPa MPa GPa atm bar                        | Pressure      | 𝐌∙𝐋⁻¹∙𝐓⁻² |
+| J kJ MJ GJ                                    | Energy        | 𝐋²∙𝐌∙𝐓⁻² |
+| Nmm Nm daNm kNm MNm GNm                       | Moment        | 𝐋²∙𝐌∙𝐓⁻² |
+| l dl cl ml                                    | Volume        | 𝐋³ |
+| g                                             | Acceleration  | 𝐋∙𝐓⁻² |
 
 ## Dimensions
 Dimensions are useful for defining specialized functions, e.g. `plot(F::Force)`.
 
 | Derived dimension | Dimensions |
 | ------------- | ------------- |
-| Area         | ᴸ²            |
-| Velocity     | ᴸ / ᵀ         |
-| Acceleration | ᴸ / ᵀ²        |
-| Force        | ᴸ ∙ ᴹ / ᵀ²    |
-| Pressure     | ᴹ / (ᵀ² ∙ ᴸ ) |
-| Density      | ᴹ / ᴸ³        |
+| Area         | 𝐋²            |
+| Velocity     | 𝐋 / 𝐓         |
+| Acceleration | 𝐋 / 𝐓²        |
+| Force        | 𝐋∙𝐌 / 𝐓²    |
+| Pressure     | 𝐌 / (𝐓²∙𝐋) |
+| Density      | 𝐌 / 𝐋³        |
 
-We avoid defining common and ambigious derived dimensions. For example, the derived dimension for Length³ = ᴸ³ could be a volume, or just as usefully a first area moment.
+We avoid defining common and ambigious derived dimensions. For example, the derived dimension for Length³ = 𝐋³ could be a volume, or just as usefully a first area moment.
 
 ## Usage
 
@@ -94,15 +122,15 @@ mm
 julia> preferunits(m) # No effect, since upreferred was called once this session
 
 julia> m_s = [30kg/m 28.8lb/ft]
-1×2 Matrix{Quantity{Float64,  ᴹ∙ ᴸ⁻¹, FreeUnits{(kg, m⁻¹),  ᴹ∙ ᴸ⁻¹, nothing}}}:
+1×2 Matrix{Quantity{Float64, 𝐌∙𝐋⁻¹, FreeUnits{(kg, m⁻¹), 𝐌∙𝐋⁻¹, nothing}}}:
  30.0  42.8591
 
 julia> l_s = 93ft*[3 4]m/s
-1×2 Matrix{Quantity{Int64,  ᴸ²∙ ᵀ⁻¹, FreeUnits{(ft, m, s⁻¹),  ᴸ²∙ ᵀ⁻¹, nothing}}}:
+1×2 Matrix{Quantity{Int64, 𝐋²∙𝐓⁻¹, FreeUnits{(ft, m, s⁻¹), 𝐋²∙𝐓⁻¹, nothing}}}:
  279  372
 
 julia> m_s.*l_s .|> (kg*m)
-1×2 Matrix{Quantity{Float64,  ᴸ∙ ᴹ∙ ᵀ⁻¹, FreeUnits{(kg, m, s⁻¹),  ᴸ∙ ᴹ∙ ᵀ⁻¹, nothing}}}:
+1×2 Matrix{Quantity{Float64, 𝐋∙𝐌∙𝐓⁻¹, FreeUnits{(kg, m, s⁻¹), 𝐋∙𝐌∙𝐓⁻¹, nothing}}}:
  2551.18  4859.61
 
 julia> E=206GPa; h_y = 100mm; b = 30mm; I = 1/12 * b * h_y^3
@@ -121,14 +149,14 @@ julia> k(d) = E * 0.691 * π/4 * d^2 / l_wire |> N/mm
 k (generic function with 1 method)
 
 julia> k.([5 6 8]mm)
-1×3 Matrix{Quantity{Float64,  ᴹ∙ ᵀ⁻², FreeUnits{(mm⁻¹, N),  ᴹ∙ ᵀ⁻², nothing}}}:
+1×3 Matrix{Quantity{Float64, 𝐌∙𝐓⁻², FreeUnits{(mm⁻¹, N), 𝐌∙𝐓⁻², nothing}}}:
  139.748  201.237  357.755
 
 julia> δ(d)= F / k(d) |> mm
 δ (generic function with 1 method)
 
 julia> δ.([5, 6, 8]mm)
-3-element Vector{Quantity{Float64,  ᴸ, FreeUnits{(mm,),  ᴸ, nothing}}}:
+3-element Vector{Quantity{Float64, 𝐋, FreeUnits{(mm,), 𝐋, nothing}}}:
   7.017388381199098
   4.873186375832707
  2.7411673364058977
@@ -137,7 +165,7 @@ julia> d = 6mm
 6mm
 
 julia> dimension(d)
- ᴸ
+ 𝐋
 
 julia> 1d |> s
 (3//500)m
@@ -148,7 +176,7 @@ julia> sqrt(1G²)
 6.6743e-11m³∙kg⁻¹∙s⁻²
 
 julia> [1V*12.0A 2W 1kg*g*1m/2s]*30minute .|> kJ
-1×3 Matrix{Quantity{Float64,  ᴸ²∙ ᴹ∙ ᵀ⁻², FreeUnits{(kJ,),  ᴸ²∙ ᴹ∙ ᵀ⁻², nothing}}}:
+1×3 Matrix{Quantity{Float64, 𝐋²∙𝐌∙𝐓⁻², FreeUnits{(kJ,), 𝐋²∙𝐌∙𝐓⁻², nothing}}}:
  21.6  3.6  8.82598
 
 julia> ω = 50*2π*rad/s
@@ -158,14 +186,14 @@ julia> t = (0:0.006:0.02)s
 (0.0:0.006:0.018)s
 
 julia> u = 220V*exp.(im∙(ω∙t))
-4-element Vector{Quantity{ComplexF64,  ᴸ²∙ ᴹ∙ ᴵ⁻¹∙ ᵀ⁻³, FreeUnits{(V,),  ᴸ²∙ ᴹ∙ ᴵ⁻¹∙ ᵀ⁻³, nothing}}}:
+4-element Vector{Quantity{ComplexF64, 𝐋²∙𝐌∙𝐈⁻¹∙𝐓⁻³, FreeUnits{(V,), 𝐋²∙𝐌∙𝐈⁻¹∙𝐓⁻³, nothing}}}:
                               220.0 + 0.0im
    -67.98373876248841 + 209.2324335849338im
  -177.98373876248843 - 129.31275550434407im
   177.98373876248843 - 129.31275550434412im
 
 julia> u*1.5A .|> J
-4-element Vector{Quantity{ComplexF64,  ᴸ²∙ ᴹ∙ ᵀ⁻³, FreeUnits{(J, s⁻¹),  ᴸ²∙ ᴹ∙ ᵀ⁻³, nothing}}}:
+4-element Vector{Quantity{ComplexF64, 𝐋²∙𝐌∙𝐓⁻³, FreeUnits{(J, s⁻¹), 𝐋²∙𝐌∙𝐓⁻³, nothing}}}:
                              330.0 + 0.0im
  -101.97560814373261 + 313.8486503774007im
  -266.97560814373264 - 193.9691332565161im
@@ -184,7 +212,7 @@ julia> (1.0cm², 2.0mm∙m, 3.0dm⁴/m² ) .|> mm²
 (100.0, 2000.0, 300.0)mm²
 
 julia> typeof(dyn)
-FreeUnits{(dyn,),  ᴸ∙ ᴹ∙ ᵀ⁻², nothing}
+FreeUnits{(dyn,), 𝐋∙𝐌∙𝐓⁻², nothing}
 
 julia> 1dyn |> μm
 10kg∙μm∙s⁻²
@@ -239,12 +267,12 @@ This means:
 * `g` is gravity's acceleration, not a gramme
 * Prefer `mm` and `MPa`
 * Non-decorated REPL output can always be parsed as input. We define the bullet operator `∙` (U+2219, \vysmblkcircle + tab) and print e.g. `2.32m∙s⁻¹`
-* Substitute symbols which can't be displayed in Windows without installing CygWin or VSCode. .: `𝐓 -> ᵀ`
+* Substitute symbols which can't be displayed in Windows without installing CygWin or VSCode. .: `𝐓 -> 𝐓`
 * Units show with color (although not in a text file)
 * Array and tuple output moves common units outside brackets or to the header:
 ```julia
 julia> dist = [900mm, 1.1m]
-2-element Array{Quantity{Float64, ᴸ,FreeUnits{(mm,), ᴸ,nothing}},1}:
+2-element Array{Quantity{Float64, 𝐋,FreeUnits{(mm,), 𝐋,nothing}},1}:
   900.0
  1100.0
 ```

@@ -4,10 +4,10 @@ using Unitfu
 export ∙
 # Import / exports for short and parseable type signatures
 import Unitfu: Time, Length, Mass, Temperature, Current, Luminosity, Amount
-import Unitfu: ᵀ , ᴸ , ᴹ , ᶿ, ᴶ , ᴺ
+import Unitfu: 𝐓 , 𝐋 , 𝐌 , 𝚯, 𝐉 , 𝐍
 import Unitfu: lookup_units, promote_to_derived
 export Time, Length, Mass, Temperature, Current, Luminosity, Amount, Level
-export ᵀ , ᴸ , ᴹ , ᶿ , ᴶ , ᴺ
+export 𝐓 , 𝐋 , 𝐌 , 𝚯 , 𝐉 , 𝐍
 export Quantity, DimensionlessQuantity, NoUnits, NoDims
 import Unitfu:
         FreeUnits, AffineUnits, Affine, AffineQuantity, Unitlike, Unit, Dimension, Dimensions, Units
@@ -43,13 +43,13 @@ import Base: tryparse_internal, parse
 include("internal_functions.jl")
 include("import_export_units.jl")
 # We have defined and exported e.g. m². Now do the same for dimension symbbols,
-# so that e.g.  ᵀ² == ᵀ ^². This way, output could be used as constructors.
-eval(exponents_superscripts(:ᵀ))
-eval(exponents_superscripts(:ᴸ))
-eval(exponents_superscripts(:ᴹ))
-eval(exponents_superscripts(:ᶿ))
-eval(exponents_superscripts(:ᴶ))
-eval(exponents_superscripts(:ᴺ))
+# so that e.g.  𝐓² == 𝐓 ^². This way, output could be used as constructors.
+eval(exponents_superscripts(:𝐓))
+eval(exponents_superscripts(:𝐋))
+eval(exponents_superscripts(:𝐌))
+eval(exponents_superscripts(:𝚯))
+eval(exponents_superscripts(:𝐉))
+eval(exponents_superscripts(:𝐍))
 
 # Used for registering units with Unitfu macros during initialisation.
 const localunits = Unitfu.basefactors
