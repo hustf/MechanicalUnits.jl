@@ -26,7 +26,7 @@ julia> [1,2,3]m |> println
 [1, 2, 3]m
 julia> [1,2,3s]m |> println
 [1m, 2m, 3m∙s]
-´´´
+```
 
 'Unitfu' (and so also this package) can parse its own output:
   - drop spaces between number and measure. Printed lines can be re-used as input: `x = 1kg`
