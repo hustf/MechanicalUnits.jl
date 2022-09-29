@@ -3,7 +3,7 @@ using Unitfu
 # Exported infix function / operator
 export ∙
 # Import / exports for short and parseable type signatures
-using Unitfu: Time, Length, Mass, Temperature, Current, Luminosity, Amount, Dimensions, Dimension
+using Unitfu: Time, Length, Mass, Temperature, Current, Luminosity, Amount, Dimensions, Dimension, DimensionError
 using Unitfu: 𝐓 , 𝐋 , 𝐌 , 𝚯, 𝐉 , 𝐍
 using Unitfu: lookup_units, promote_to_derived
 export Time, Length, Mass, Temperature, Current, Luminosity, Amount, Level
