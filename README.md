@@ -39,11 +39,13 @@ julia> 1kg∙km/s |> N
 1000N∙s
 ```
 
-'MechanicalUnits' defines unicode superscripts and SI prefixes when you import a unit. This is useful when you know in advance which units you are going to work with:
+'MechanicalUnits' 
+  - extends parsing from strings. Spaces are allowed: `Base.parse(Quantity{Float64}, "1.0 kg")`
+  - defines unicode superscripts when you import a unit. This is useful when you know which units you are going to work with:
 ```julia
 julia> using MechanicalUnits: @import_expand
 
-julia> @import_expand ~ m
+julia> @import_expand ~ m   # ~: also import SI prefixes
 
 julia> 2km² * 1km 
 2km³
@@ -109,6 +111,7 @@ julia> using MechanicalUnits
 
 julia> m_air = 1000kg; c_p = 1.00kJ/(kg*K)
 1.0kJ∙kg⁻¹∙K⁻¹
+
 julia> @import_expand ~W   # Watt = Joule / Second is not exported by default. Several: (u1, u2,..)
 
 julia> Q_cp(T1, T2) = m_air * c_p * (T2 - T1) |> (kW*h)
@@ -123,15 +126,15 @@ mm
 julia> preferunits(m) # No effect, since upreferred was called once this session
 
 julia> m_s = [30kg/m 28.8lb/ft]
-1×2 Matrix{Quantity{Float64, 𝐌∙𝐋⁻¹, FreeUnits{(kg, m⁻¹), 𝐌∙𝐋⁻¹, nothing}}}:
+1×2 Matrix{Quantity{Float64, 𝐌 ∙𝐋 ⁻¹, FreeUnits{(kg, m⁻¹), 𝐌 ∙𝐋 ⁻¹, nothing}}}:
  30.0  42.8591
 
 julia> l_s = 93ft*[3 4]m/s
-1×2 Matrix{Quantity{Int64, 𝐋²∙𝐓⁻¹, FreeUnits{(ft, m, s⁻¹), 𝐋²∙𝐓⁻¹, nothing}}}:
+1×2 Matrix{Quantity{Int64, 𝐋 ²∙𝐓 ⁻¹, FreeUnits{(ft, m, s⁻¹), 𝐋 ²∙𝐓 ⁻¹, nothing}}}:
  279  372
 
 julia> m_s.*l_s .|> (kg*m)
-1×2 Matrix{Quantity{Float64, 𝐋∙𝐌∙𝐓⁻¹, FreeUnits{(kg, m, s⁻¹), 𝐋∙𝐌∙𝐓⁻¹, nothing}}}:
+1×2 Matrix{Quantity{Float64, 𝐋 ∙𝐌 ∙𝐓 ⁻¹, FreeUnits{(kg, m, s⁻¹), 𝐋 ∙𝐌 ∙𝐓 ⁻¹, nothing}}}:
  2551.18  4859.61
 
 julia> E=206GPa; h_y = 100mm; b = 30mm; I = 1/12 * b * h_y^3
@@ -150,14 +153,14 @@ julia> k(d) = E * 0.691 * π/4 * d^2 / l_wire |> N/mm
 k (generic function with 1 method)
 
 julia> k.([5 6 8]mm)
-1×3 Matrix{Quantity{Float64, 𝐌∙𝐓⁻², FreeUnits{(mm⁻¹, N), 𝐌∙𝐓⁻², nothing}}}:
+1×3 Matrix{Quantity{Float64, 𝐌 ∙𝐓 ⁻², FreeUnits{(mm⁻¹, N), 𝐌 ∙𝐓 ⁻², nothing}}}:
  139.748  201.237  357.755
 
 julia> δ(d)= F / k(d) |> mm
 δ (generic function with 1 method)
 
 julia> δ.([5, 6, 8]mm)
-3-element Vector{Quantity{Float64, 𝐋, FreeUnits{(mm,), 𝐋, nothing}}}:
+3-element Vector{Quantity{Float64, 𝐋 , FreeUnits{(mm,), 𝐋 , nothing}}}:
   7.017388381199098
   4.873186375832707
  2.7411673364058977
@@ -166,7 +169,7 @@ julia> d = 6mm
 6mm
 
 julia> dimension(d)
- 𝐋
+𝐋
 
 julia> 1d |> s
 (3//500)m
@@ -177,24 +180,24 @@ julia> sqrt(1G²)
 6.6743e-11m³∙kg⁻¹∙s⁻²
 
 julia> [1V*12.0A 2W 1kg*g*1m/2s]*30minute .|> kJ
-1×3 Matrix{Quantity{Float64, 𝐋²∙𝐌∙𝐓⁻², FreeUnits{(kJ,), 𝐋²∙𝐌∙𝐓⁻², nothing}}}:
+1×3 Matrix{Quantity{Float64, 𝐋 ²∙𝐌 ∙𝐓 ⁻², FreeUnits{(kJ,), 𝐋 ²∙𝐌 ∙𝐓 ⁻², nothing}}}:
  21.6  3.6  8.82598
 
 julia> ω = 50*2π*rad/s
 314.1592653589793rad∙s⁻¹
 
 julia> t = (0:0.006:0.02)s
-(0.0:0.006:0.018)s
+(0.0:0.006:0.018000000000000002)s
 
 julia> u = 220V*exp.(im∙(ω∙t))
-4-element Vector{Quantity{ComplexF64, 𝐋²∙𝐌∙𝐈⁻¹∙𝐓⁻³, FreeUnits{(V,), 𝐋²∙𝐌∙𝐈⁻¹∙𝐓⁻³, nothing}}}:
+4-element Vector{Quantity{ComplexF64, 𝐋 ²∙𝐌 ∙𝐈 ⁻¹∙𝐓 ⁻³, FreeUnits{(V,), 𝐋 ²∙𝐌 ∙𝐈 ⁻¹∙𝐓 ⁻³, nothing}}}:
                               220.0 + 0.0im
    -67.98373876248841 + 209.2324335849338im
  -177.98373876248843 - 129.31275550434407im
   177.98373876248843 - 129.31275550434412im
 
 julia> u*1.5A .|> J
-4-element Vector{Quantity{ComplexF64, 𝐋²∙𝐌∙𝐓⁻³, FreeUnits{(J, s⁻¹), 𝐋²∙𝐌∙𝐓⁻³, nothing}}}:
+4-element Vector{Quantity{ComplexF64, 𝐋 ²∙𝐌 ∙𝐓 ⁻³, FreeUnits{(J, s⁻¹), 𝐋 ²∙𝐌 ∙𝐓 ⁻³, nothing}}}:
                              330.0 + 0.0im
  -101.97560814373261 + 313.8486503774007im
  -266.97560814373264 - 193.9691332565161im
@@ -202,10 +205,10 @@ julia> u*1.5A .|> J
 ```
 
 ### Importing fewer units, or other units
-If you want fewer globally defined variables, @import_expand just what you need:
+If you want fewer globally defined variables, `@import_expand` is what you need:
 
 ```julia
-julia> import MechanicalUnits: @import_expand, ∙
+julia> using MechanicalUnits: @import_expand, ∙
 
 julia> @import_expand ~m dyn     # ~ : also import SI prefixes for metre
 
@@ -213,7 +216,7 @@ julia> (1.0cm², 2.0mm∙m, 3.0dm⁴/m² ) .|> mm²
 (100.0, 2000.0, 300.0)mm²
 
 julia> typeof(dyn)
-FreeUnits{(dyn,), 𝐋∙𝐌∙𝐓⁻², nothing}
+Unitfu.FreeUnits{(dyn,), 𝐋 ∙𝐌 ∙𝐓 ⁻², nothing}
 
 julia> 1dyn |> μm
 10kg∙μm∙s⁻²
@@ -223,10 +226,12 @@ julia> 1dyn |> μm
 When parsing a text file, typically from some other software, spaces as multipliers and brackets are allowed. Tabs are also accepted. But you need to specify the numeric type of output quantities, like this:
 
 ```julia
+julia> using MechanicalUnits
+
 julia> strinp = "2 [s]\t11364.56982421875 [N]\t-44553.50244140625 [N]\t-26.586366176605225 [N]\t0.0[N mm]\t0.0[N mm]\t0.0[N mm]\t1561.00350618362 [mm]\t-6072.3729133606 [mm]\t2825.15907287598 [mm]";
 
 julia> time, Fx, Fy, Fz, Mx, My, Mz, px, py, pz = parse.(Quantity{Float64}, split(strinp, '\t'))
-10-element Vector{Quantity{Float64, D, U} where {D, U}}:
+10-element Vector{Quantity{Float64}}:
                  2.0s
    11364.56982421875N
   -44553.50244140625N

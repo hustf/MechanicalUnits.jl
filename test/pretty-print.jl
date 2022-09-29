@@ -1,7 +1,7 @@
 using MechanicalUnits
 using Test
 # Note that the printing functionality has been moved from here to a clone/ fork of Unitful.
-# This is now mostly redundant.
+# Some of the below is now redundant.
 shortp(x) = repr(x, context = :color=>true)
 longp(x) = repr(:"text/plain", x, context = :color=>true)
 

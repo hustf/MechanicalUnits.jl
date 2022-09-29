@@ -48,8 +48,10 @@ end
 @import_expand inch ft lb lbf
 # affine units
 @import_affine_from_Unitfu °C °F
-abbr(::genericunit(°C)) = "°C"
-abbr(::genericunit(°F)) = "°F"
+# Note, not sure why this was needed at an earlier point: 
+# abbr(::genericunit(°C)) = "°C" 
+# abbr(::genericunit(°F)) = "°F"
+
 # preferred capitalization units
 begin
     @unit h      "h"       hour        (3600//1)s false

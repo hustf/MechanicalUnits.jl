@@ -29,8 +29,8 @@ t = (0:0.006:0.02)s
 u = 220V*exp.(im∙(ω∙t))
 u*1.5A .|> J
 
-# Second code section
-import MechanicalUnits: @import_expand, ∙
+# Second code section, fresh session
+using MechanicalUnits: @import_expand, ∙
 @import_expand ~m dyn     # ~ : also import SI prefixes for metre
 (1.0cm², 2.0mm∙m, 3.0dm⁴/m² ) .|> mm²
 typeof(dyn)
@@ -38,7 +38,8 @@ typeof(dyn)
 
 
 
-# Third code section
+# Third code section. `using MechanicalUnits` first
+using MechanicalUnits
 strinp = "2 [s]\t11364.56982421875 [N]\t-44553.50244140625 [N]\t-26.586366176605225 [N]\t0.0[N mm]\t0.0[N mm]\t0.0[N mm]\t1561.00350618362 [mm]\t-6072.3729133606 [mm]\t2825.15907287598 [mm]";
 
 time, Fx, Fy, Fz, Mx, My, Mz, px, py, pz = parse.(Quantity{Float64}, split(strinp, '\t'))
