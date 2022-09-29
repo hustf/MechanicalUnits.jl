@@ -1,7 +1,7 @@
 name = "MechanicalUnits"
 uuid = "e6be9192-89dc-11e9-36e6-5dbcb28f419e"
 authors = ["hustf <hustf@users.noreply.github.com>"]
-version = "0.5.5"
+version = "0.5.6"
 
 [deps]
 Unitfu = "5ee08b94-2369-4f4a-b8c7-99333ba35fb0"

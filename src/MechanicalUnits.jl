@@ -3,9 +3,10 @@ using Unitfu
 # Exported infix function / operator
 export ∙
 # Import / exports for short and parseable type signatures
+import Unitfu
 using Unitfu: Time, Length, Mass, Temperature, Current, Luminosity, Amount, Dimensions, Dimension, DimensionError
 using Unitfu: 𝐓 , 𝐋 , 𝐌 , 𝚯, 𝐉 , 𝐍
-using Unitfu: lookup_units, promote_to_derived, numtype
+using Unitfu: lookup_units, promote_to_derived, numtype, norm
 export Time, Length, Mass, Temperature, Current, Luminosity, Amount, Level
 export 𝐓 , 𝐋 , 𝐌 , 𝚯 , 𝐉 , 𝐍
 export AbstractQuantity, Quantity, DimensionlessQuantity, NoUnits, NoDims
@@ -17,10 +18,10 @@ export @import_expand, @unit, @u_str
 
 # Reexported functions from Unitfu
 export logunit, unit, absoluteunit, dimension, uconvert, ustrip, upreferred, ∙
-export uconvertp, uconvertrp, reflevel, linear, norm, zero
+export uconvertp, uconvertrp, reflevel, linear, zero
 
 # Useful functions that are not exported by Unitfu.
-export preferunits, convfact, promote_to_derived, numtype
+export preferunits, convfact, promote_to_derived, numtype, norm
 
 # A vector of all the exported units. This is printed during precompilation.
 export MECH_UNITS
