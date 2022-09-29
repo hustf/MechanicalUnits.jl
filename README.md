@@ -20,14 +20,15 @@ Using units should be quick, nice and easy. That's the aim of this package, buil
   - units are printed with colors
   - use '∙' instead of '*'
   - print common units outside of collection brackets:
-´´´
+  
+```julia
 julia> [1,2,3]m |> println
 [1, 2, 3]m
 julia> [1,2,3s]m |> println
 [1m, 2m, 3m∙s]
 ´´´
 
-'Unitfu' (and so also this package) makes input easier:
+'Unitfu' (and so also this package) can parse its own output:
   - drop spaces between number and measure. Printed lines can be re-used as input: `x = 1kg`
   - don't throw errors at meaningful conversions. 'Conversion factors' can be quantities, not just numbers.
 
@@ -38,17 +39,17 @@ julia> 1kg∙km/s |> N
 1000N∙s
 ```
 
-'MechanicalUnits' adds a macro for units including SI prefixes and more readable  exponents. This is useful when you know in advance which units you are going to work with:
+'MechanicalUnits' defines unicode superscripts and SI prefixes when you import a unit. This is useful when you know in advance which units you are going to work with:
 ```julia
 julia> using MechanicalUnits: @import_expand
 
 julia> @import_expand ~ m
 
-julia> vol = 2km³
+julia> 2km² * 1km 
 2km³
 ```
 
-You can also just 'use MechanicalUnits' to import all the commonly used units.
+You can also just 'use MechanicalUnits' to import all the commonly used units, prefixes and superscripts.
 
 Benefits to using quantities rather than just numbers:
 * Fewer mistakes
@@ -56,8 +57,8 @@ Benefits to using quantities rather than just numbers:
 * Hints to find wrong input
 * Quicker problem solving
 * More ways to understand a problem or read a calculation
-* Functions can dispatch based on input dimensions: You would plot a force vector differently to a position.
-* Makes good quality checking of reports realistically possible.
+* Functions can dispatch based on input dimensions: You would plot a force vector differently to a position vector.
+* Makes quality checking of reports realistically possible.
 
 ## Units
 | Units | (Derived) dimension | Dimensions |
